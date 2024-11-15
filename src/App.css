@@ -1,0 +1,13 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.App {
+  @apply flex h-screen; /* Use Tailwind utilities for full-screen layout */
+}
+
+@media (max-width: 768px) {
+  .sidebar {
+    display: none;
+  }
+}
