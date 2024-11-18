@@ -8,6 +8,7 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': path.resolve(__dirname, 'src'), // Ensure this path is correct
+      '~': path.resolve(__dirname, './src'),
     },
   },
 });

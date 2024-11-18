@@ -1,17 +1,20 @@
-// src/main.jsx
 import React from 'react';
-import { createRoot } from 'react-dom/client';
-import { Provider } from "@/components/ui/provider"
-import App from './App.jsx';
-import './index.css'; // Ensure this doesn't contain styles that hide content
+import ReactDOM from 'react-dom/client';
+import App from './App'; // Ensure the correct path to your `App` component
+import './index.css'
+import { ThemeProvider } from './context/ThemeContext';
 
-const container = document.getElementById('root');
-const root = createRoot(container);
+const rootElement = document.getElementById('root');
 
-root.render(
-    <React.StrictMode>
-        <Provider>
-            <App />
-        </Provider>
-    </React.StrictMode>
-);
+if (rootElement) {
+    const root = ReactDOM.createRoot(rootElement);
+    root.render(
+        <React.StrictMode>
+            <ThemeProvider>
+                <App />
+            </ThemeProvider>
+        </React.StrictMode>
+    );
+} else {
+    console.error("Root element not found");
+}
