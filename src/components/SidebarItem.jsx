@@ -9,7 +9,14 @@ import {
 import PropTypes from 'prop-types';
 import { useTheme } from '@mui/material/styles';
 
-const SidebarItem = ({ id, title, selected, onEdit, onDelete, onClick }) => {
+const SidebarItem = ({
+                         id,
+                         title,
+                         selected,
+                         onEdit = () => {},
+                         onDelete = () => {},
+                         onClick = () => {},
+                     }) => {
     const theme = useTheme();
     const [anchorEl, setAnchorEl] = React.useState(null);
     const open = Boolean(anchorEl);
@@ -33,10 +40,13 @@ const SidebarItem = ({ id, title, selected, onEdit, onDelete, onClick }) => {
         handleMenuClose();
     };
 
+    const handleItemClick = () => {
+        onClick(id);
+    };
+
     return (
         <ListItemButton
-            selected={selected}
-            onClick={() => onClick(id)} // Call the onClick handler with the item's id
+            onClick={handleItemClick} // Call the onClick handler with the item's id
             sx={{
                 paddingLeft: 2,
                 paddingRight: 2,
@@ -46,43 +56,33 @@ const SidebarItem = ({ id, title, selected, onEdit, onDelete, onClick }) => {
                 },
             }}
         >
-            <ListItemText
-                primary={title}
-                primaryTypographyProps={{
-                    variant: 'body1',
-                    color: 'text.primary',
-                }}
-            />
+            <ListItemText primary={title} />
             <IconButton
-                aria-label="more options"
-                aria-controls={open ? `sidebar-item-menu-${id}` : undefined}
-                aria-haspopup="true"
+                edge="end"
+                aria-label="more"
                 onClick={handleMenuOpen}
-                size="small"
-                sx={{
-                    color: 'text.secondary',
-                }}
             >
-                <MoreVertIcon fontSize="small" />
+                <MoreVertIcon />
             </IconButton>
             <Menu
-                id={`sidebar-item-menu-${id}`}
                 anchorEl={anchorEl}
                 open={open}
                 onClose={handleMenuClose}
-                PaperProps={{
-                    elevation: 3,
-                    sx: { mt: 1.5 },
+                anchorOrigin={{
+                    vertical: 'top',
+                    horizontal: 'right',
                 }}
-                transformOrigin={{ horizontal: 'right', vertical: 'top' }}
-                anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+                transformOrigin={{
+                    vertical: 'top',
+                    horizontal: 'right',
+                }}
             >
                 <MenuItem onClick={handleEdit}>
-                    <EditIcon fontSize="small" sx={{ marginRight: 1 }} />
+                    <EditIcon fontSize="small" style={{ marginRight: 8 }} />
                     Edit
                 </MenuItem>
                 <MenuItem onClick={handleDelete}>
-                    <DeleteIcon fontSize="small" sx={{ marginRight: 1 }} />
+                    <DeleteIcon fontSize="small" style={{ marginRight: 8 }} />
                     Delete
                 </MenuItem>
             </Menu>
@@ -97,12 +97,6 @@ SidebarItem.propTypes = {
     onEdit: PropTypes.func,
     onDelete: PropTypes.func,
     onClick: PropTypes.func,
-};
-
-SidebarItem.defaultProps = {
-    onEdit: () => {},
-    onDelete: () => {},
-    onClick: () => {},
 };
 
 export default SidebarItem;

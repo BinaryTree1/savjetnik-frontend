@@ -132,6 +132,10 @@ const App = () => {
     // Filter chats to include only those with at least one message
     const filteredChats = chats.filter(chat => chat.messages.length > 0);
 
+    const handleReorderChats = (newChatsOrder) => {
+        setChats(newChatsOrder);
+    };
+
     const renderSidebar = () => (
         <Sidebar
             isCollapsed={!isSidebarOpen}
@@ -144,6 +148,7 @@ const App = () => {
             onEditChat={handleEditChat}
             onDeleteChat={handleDeleteChat}
             onSelectChat={handleSelectChat}
+            onReorderChats={handleReorderChats} // Pass the handler
         />
     );
 

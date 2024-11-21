@@ -30,6 +30,7 @@ const Sidebar = ({
                      onEditChat,
                      onDeleteChat,
                      onSelectChat,
+                     onReorderChats,
                  }) => {
     const muiTheme = useMuiTheme();
     const isMobile = useMediaQuery(muiTheme.breakpoints.down('sm')); // Up to 600px
@@ -123,6 +124,7 @@ const Sidebar = ({
                         onEditChat={onEditChat}
                         onDeleteChat={onDeleteChat}
                         onSelectChat={onSelectChat}
+                        onReorderChats={onReorderChats}
                     />
                 </>
             )}
@@ -147,6 +149,7 @@ Sidebar.propTypes = {
     onEditChat: PropTypes.func.isRequired,
     onDeleteChat: PropTypes.func.isRequired,
     onSelectChat: PropTypes.func.isRequired,
+    onReorderChats: PropTypes.func.isRequired,
 };
 
 export default Sidebar;

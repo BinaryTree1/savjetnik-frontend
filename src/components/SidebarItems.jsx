@@ -1,7 +1,5 @@
-// SidebarItems.jsx
 import React, { useState } from 'react';
 import {
-    List,
     Typography,
     Dialog,
     DialogTitle,
@@ -14,21 +12,26 @@ import {
 import { useTheme as useMuiTheme } from '@mui/material/styles';
 import SidebarItem from './SidebarItem';
 import PropTypes from 'prop-types';
+import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 
-const SidebarItems = ({ chats, selectedChatId, onEditChat, onDeleteChat, onSelectChat }) => {
+const SidebarItems = ({
+                          chats,
+                          selectedChatId,
+                          onEditChat,
+                          onDeleteChat,
+                          onSelectChat,
+                          onReorderChats
+                      }) => {
     const muiTheme = useMuiTheme();
-    const isMobile = useMediaQuery(muiTheme.breakpoints.down('sm')); // Up to 600px
+    const isMobile = useMediaQuery(muiTheme.breakpoints.down('sm'));
 
-    // State for Rename Dialog
     const [isRenameDialogOpen, setIsRenameDialogOpen] = useState(false);
     const [chatToEdit, setChatToEdit] = useState(null);
     const [newChatTitle, setNewChatTitle] = useState('');
 
-    // State for Delete Dialog
     const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
     const [chatToDelete, setChatToDelete] = useState(null);
 
-    // Handler to open Rename Dialog
     const handleOpenRenameDialog = (chatId) => {
         const chat = chats.find((c) => c.id === chatId);
         if (chat) {
@@ -38,14 +41,12 @@ const SidebarItems = ({ chats, selectedChatId, onEditChat, onDeleteChat, onSelec
         }
     };
 
-    // Handler to close Rename Dialog
     const handleCloseRenameDialog = () => {
         setIsRenameDialogOpen(false);
         setChatToEdit(null);
         setNewChatTitle('');
     };
 
-    // Handler to confirm Rename
     const handleConfirmRename = () => {
         if (newChatTitle.trim() !== '') {
             onEditChat(chatToEdit.id, newChatTitle.trim());
@@ -53,7 +54,6 @@ const SidebarItems = ({ chats, selectedChatId, onEditChat, onDeleteChat, onSelec
         }
     };
 
-    // Handler to open Delete Dialog
     const handleOpenDeleteDialog = (chatId) => {
         const chat = chats.find((c) => c.id === chatId);
         if (chat) {
@@ -62,40 +62,81 @@ const SidebarItems = ({ chats, selectedChatId, onEditChat, onDeleteChat, onSelec
         }
     };
 
-    // Handler to close Delete Dialog
     const handleCloseDeleteDialog = () => {
         setIsDeleteDialogOpen(false);
         setChatToDelete(null);
     };
 
-    // Handler to confirm Delete
     const handleConfirmDelete = () => {
         onDeleteChat(chatToDelete.id);
         handleCloseDeleteDialog();
     };
 
-    return (
-        <>
-            <List>
-                {chats.length === 0 ? (
-                    <Typography variant="body2" color="textSecondary" align="center" p={2}>
-                        No chats.
-                    </Typography>
-                ) : (
-                    chats.map((chat) => (
-                        <SidebarItem
-                            key={chat.id}
-                            id={chat.id}
-                            title={chat.title}
-                            selected={chat.id === selectedChatId}
-                            onEdit={handleOpenRenameDialog}
-                            onDelete={handleOpenDeleteDialog}
-                            onClick={onSelectChat}
-                        />
-                    ))
-                )}
-            </List>
+    const handleDragEnd = (result) => {
+        console.log('Drag end result:', result);
 
+        if (!result.destination) {
+            console.log('No destination');
+            return;
+        }
+
+        const reorderedChats = Array.from(chats);
+        const [movedChat] = reorderedChats.splice(result.source.index, 1);
+        reorderedChats.splice(result.destination.index, 0, movedChat);
+
+        console.log('Reordered chats:', reorderedChats);
+        onReorderChats(reorderedChats);
+    };
+
+    return (
+        <DragDropContext onDragEnd={handleDragEnd}>
+            <Droppable droppableId="sidebar-chats-droppable">
+                {(provided) => (
+                    <div
+                        ref={provided.innerRef}
+                        {...provided.droppableProps}
+                    >
+                        {chats.length === 0 ? (
+                            <Typography
+                                variant="body2"
+                                color="textSecondary"
+                                align="center"
+                                p={2}
+                            >
+                                No chats.
+                            </Typography>
+                        ) : (
+                            chats.map((chat, index) => (
+                                <Draggable
+                                    key={chat.id.toString()}
+                                    draggableId={chat.id.toString()}
+                                    index={index}
+                                >
+                                    {(provided, snapshot) => (
+                                        <div
+                                            ref={provided.innerRef}
+                                            {...provided.draggableProps}
+                                            {...provided.dragHandleProps}
+                                        >
+                                            <SidebarItem
+                                                id={chat.id}
+                                                title={chat.title || 'Untitled Chat'}
+                                                selected={chat.id === selectedChatId}
+                                                onEdit={handleOpenRenameDialog}
+                                                onDelete={handleOpenDeleteDialog}
+                                                onClick={onSelectChat}
+                                            />
+                                        </div>
+                                    )}
+                                </Draggable>
+                            ))
+                        )}
+                        {provided.placeholder}
+                    </div>
+                )}
+            </Droppable>
+
+            {/* Dialogs remain the same as in previous version */}
             {/* Rename Dialog */}
             <Dialog
                 open={isRenameDialogOpen}
@@ -152,7 +193,7 @@ const SidebarItems = ({ chats, selectedChatId, onEditChat, onDeleteChat, onSelec
                     </Button>
                 </DialogActions>
             </Dialog>
-        </>
+        </DragDropContext>
     );
 };
 
@@ -168,6 +209,7 @@ SidebarItems.propTypes = {
     onEditChat: PropTypes.func.isRequired,
     onDeleteChat: PropTypes.func.isRequired,
     onSelectChat: PropTypes.func.isRequired,
+    onReorderChats: PropTypes.func.isRequired,
 };
 
 export default SidebarItems;
