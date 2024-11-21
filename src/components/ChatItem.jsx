@@ -118,10 +118,4 @@ ChatItem.propTypes = {
   onClick: PropTypes.func, // New prop for selecting chat
 };
 
-ChatItem.defaultProps = {
-  onEdit: () => {},
-  onDelete: () => {},
-  onClick: () => {},
-};
-
 export default ChatItem;
