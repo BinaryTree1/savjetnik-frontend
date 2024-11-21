@@ -1,4 +1,4 @@
-// components/SidebarItems.jsx
+// src/components/SidebarItems.jsx
 import React, { useState, useMemo } from 'react';
 import {
   Box,
@@ -9,28 +9,28 @@ import {
   DialogActions,
   TextField,
   Button,
-  useMediaQuery,
   InputAdornment,
 } from '@mui/material';
-import { useTheme as useMuiTheme } from '@mui/material/styles';
-import SidebarItem from './SidebarItem';
-import PropTypes from 'prop-types';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import SearchIcon from '@mui/icons-material/Search';
-import useDebounce from "../hooks/useDebounce.jsx";
+import MoreVertIcon from '@mui/icons-material/MoreVert';
+import useDebounce from '../hooks/useDebounce.jsx';
+import useStore from '../store';
+import SidebarItem from './SidebarItem.jsx';
 
-const SidebarItems = ({
-                        chats,
-                        selectedChatId,
-                        onEditChat,
-                        onDeleteChat,
-                        onSelectChat,
-                        onReorderChats,
-                      }) => {
-  const muiTheme = useMuiTheme();
-  const isMobile = useMediaQuery(muiTheme.breakpoints.down('sm'));
+const SidebarItems = () => {
+  // Accessing the theme from MUI
+  const muiTheme = useStore((state) => state.muiTheme); // Ensure you have this in your store if used
 
-  // Search state
+  // Accessing state from Zustand without transforming it
+  const chats = useStore((state) => state.chats); // Raw chats array
+  const selectedChatId = useStore((state) => state.selectedChatId);
+  const editChat = useStore((state) => state.editChat);
+  const deleteChat = useStore((state) => state.deleteChat);
+  const selectChat = useStore((state) => state.selectChat);
+  const reorderChats = useStore((state) => state.reorderChats);
+
+  // Local component states
   const [searchQuery, setSearchQuery] = useState('');
 
   // Dialog states
@@ -46,19 +46,29 @@ const SidebarItems = ({
     setSearchQuery(e.target.value);
   };
 
-  const debouncedSearchQuery = useDebounce(searchQuery, 300); // 300ms delay
+  // Debounce the search query to optimize performance
+  const debouncedSearchQuery = useDebounce(searchQuery, 300);
 
-  // Filtered chats based on search query
+  /**
+   * Memoize the filtered chats to prevent unnecessary computations
+   * and ensure stable references unless dependencies change.
+   */
   const filteredChats = useMemo(() => {
+    // Filter chats that have at least one message
+    const activeChats = chats.filter((chat) => chat.messages.length > 0);
+
+    // Further filter based on the search query
     if (!debouncedSearchQuery.trim()) {
-      return chats;
+      return activeChats;
     }
+
     const lowercasedQuery = debouncedSearchQuery.toLowerCase();
-    return chats.filter((chat) =>
+    return activeChats.filter((chat) =>
         chat.title.toLowerCase().includes(lowercasedQuery)
     );
   }, [chats, debouncedSearchQuery]);
 
+  // Handlers for Rename Dialog
   const handleOpenRenameDialog = (chatId) => {
     const chat = chats.find((c) => c.id === chatId);
     if (chat) {
@@ -76,11 +86,12 @@ const SidebarItems = ({
 
   const handleConfirmRename = () => {
     if (newChatTitle.trim() !== '') {
-      onEditChat(chatToEdit.id, newChatTitle.trim());
+      editChat(chatToEdit.id, newChatTitle.trim());
       handleCloseRenameDialog();
     }
   };
 
+  // Handlers for Delete Dialog
   const handleOpenDeleteDialog = (chatId) => {
     const chat = chats.find((c) => c.id === chatId);
     if (chat) {
@@ -95,24 +106,22 @@ const SidebarItems = ({
   };
 
   const handleConfirmDelete = () => {
-    onDeleteChat(chatToDelete.id);
+    deleteChat(chatToDelete.id);
     handleCloseDeleteDialog();
   };
 
+  // Handler for Drag and Drop
   const handleDragEnd = (result) => {
-    console.log('Drag end result:', result);
-
     if (!result.destination) {
-      console.log('No destination');
       return;
     }
 
-    const reorderedChats = Array.from(chats);
+    const reorderedChats = Array.from(filteredChats);
     const [movedChat] = reorderedChats.splice(result.source.index, 1);
     reorderedChats.splice(result.destination.index, 0, movedChat);
 
-    console.log('Reordered chats:', reorderedChats);
-    onReorderChats(reorderedChats);
+    // Reorder chats in the store based on the new order
+    reorderChats(reorderedChats);
   };
 
   return (
@@ -137,12 +146,12 @@ const SidebarItems = ({
                         ),
                         sx: {
                           '& fieldset': {
-                            border: 'none', // Removes the border
+                            border: 'none',
                           },
                         },
                       }}
                       sx={{
-                        borderRadius: '8px', // Optional: Add rounded corners
+                        borderRadius: '8px',
                       }}
                       aria-label="Search Chats"
                   />
@@ -167,7 +176,7 @@ const SidebarItems = ({
                             draggableId={chat.id.toString()}
                             index={index}
                         >
-                          {(provided, snapshot) => (
+                          {(provided) => (
                               <div
                                   ref={provided.innerRef}
                                   {...provided.draggableProps}
@@ -179,7 +188,7 @@ const SidebarItems = ({
                                     selected={chat.id === selectedChatId}
                                     onEdit={handleOpenRenameDialog}
                                     onDelete={handleOpenDeleteDialog}
-                                    onClick={onSelectChat}
+                                    onClick={selectChat}
                                 />
                               </div>
                           )}
@@ -214,6 +223,7 @@ const SidebarItems = ({
                   maxLength: 50,
                 }}
                 helperText={`${newChatTitle.length}/50`}
+                aria-label="Chat Name"
             />
           </DialogContent>
           <DialogActions>
@@ -258,21 +268,6 @@ const SidebarItems = ({
         </Dialog>
       </DragDropContext>
   );
-};
-
-SidebarItems.propTypes = {
-  chats: PropTypes.arrayOf(
-      PropTypes.shape({
-        id: PropTypes.number.isRequired,
-        title: PropTypes.string.isRequired,
-        messages: PropTypes.array.isRequired,
-      })
-  ).isRequired,
-  selectedChatId: PropTypes.number,
-  onEditChat: PropTypes.func.isRequired,
-  onDeleteChat: PropTypes.func.isRequired,
-  onSelectChat: PropTypes.func.isRequired,
-  onReorderChats: PropTypes.func.isRequired,
 };
 
 export default SidebarItems;
