@@ -1,4 +1,3 @@
-// SidebarItem.jsx
 import React from 'react';
 import {
   ListItemButton,
@@ -62,7 +61,17 @@ const SidebarItem = ({
         },
       }}
     >
-      <ListItemText primary={title} />
+      <ListItemText
+        primary={title}
+        primaryTypographyProps={{
+          sx: {
+            whiteSpace: 'nowrap', // Prevent wrapping
+            overflow: 'hidden', // Hide overflow text
+            textOverflow: 'ellipsis', // Add ellipsis at the end
+            maxWidth: '85%', // Adjust to fit the available space
+          },
+        }}
+      />
       <IconButton edge="end" aria-label="more" onClick={handleMenuOpen}>
         <MoreVertIcon />
       </IconButton>

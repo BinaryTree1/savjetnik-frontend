@@ -1,4 +1,4 @@
-// Sidebar.jsx
+// components/Sidebar.jsx
 import React from 'react';
 import {
   Box,
@@ -15,6 +15,8 @@ import {
   ChevronRight as ChevronRightIcon,
   WbSunny as WbSunnyIcon,
   NightlightRound as NightlightRoundIcon,
+  Folder as FolderIcon,
+  Chat as ChatIcon,
 } from '@mui/icons-material';
 import SidebarItems from './SidebarItems';
 import PropTypes from 'prop-types';
@@ -31,6 +33,8 @@ const Sidebar = ({
   onDeleteChat,
   onSelectChat,
   onReorderChats,
+  isFolderView,
+  onToggleView,
 }) => {
   const muiTheme = useMuiTheme();
   const isMobile = useMediaQuery(muiTheme.breakpoints.down('sm')); // Up to 600px
@@ -100,6 +104,28 @@ const Sidebar = ({
       {/* Sidebar Content */}
       {!isCollapsed && (
         <>
+          {/* Toggle View Button (Saved Chats / Messages) */}
+          <Box px={2} mb={2}>
+            <Button
+              onClick={onToggleView}
+              variant="outlined"
+              fullWidth
+              startIcon={isFolderView ? <ChatIcon /> : <FolderIcon />}
+              sx={{
+                color: 'text.primary',
+                borderColor: muiTheme.palette.divider,
+                '&:hover': {
+                  bgcolor: muiTheme.palette.hover,
+                },
+                textTransform: 'none', // Keeps the text as "Saved Chats" or "Messages"
+                justifyContent: 'flex-center', // Align icon and text to the start
+              }}
+              aria-label={isFolderView ? 'Show Messages' : 'Show Saved Chats'}
+            >
+              {isFolderView ? 'Messages' : 'Saved Chats'}
+            </Button>
+          </Box>
+
           {/* New Chat Button */}
           <Box px={2} mb={2}>
             <Button
@@ -122,7 +148,7 @@ const Sidebar = ({
 
           <Divider />
 
-          {/* SidebarItems Component */}
+          {/* Always render SidebarItems regardless of isFolderView */}
           <SidebarItems
             chats={chats}
             selectedChatId={selectedChatId}
@@ -155,6 +181,8 @@ Sidebar.propTypes = {
   onDeleteChat: PropTypes.func.isRequired,
   onSelectChat: PropTypes.func.isRequired,
   onReorderChats: PropTypes.func.isRequired,
+  isFolderView: PropTypes.bool.isRequired, // New prop
+  onToggleView: PropTypes.func.isRequired, // New prop
 };
 
 export default Sidebar;

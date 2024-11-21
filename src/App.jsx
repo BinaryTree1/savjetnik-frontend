@@ -2,6 +2,7 @@
 import React, { useState, useContext, useEffect } from 'react';
 import Sidebar from './components/Sidebar.jsx';
 import ChatWindow from './components/ChatWindow.jsx';
+import FolderDisplay from './components/FolderDisplay.jsx'; // Import FolderDisplay
 import {
   Box,
   Drawer,
@@ -18,6 +19,7 @@ import { ThemeContext } from './context/ThemeContext';
 
 const App = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [isFolderView, setIsFolderView] = useState(false); // New state
   const { themeMode, setThemeMode } = useContext(ThemeContext);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('xs')); // Up to 600px
@@ -33,6 +35,10 @@ const App = () => {
 
   const toggleTheme = () => {
     setThemeMode(themeMode === 'light' ? 'dark' : 'light');
+  };
+
+  const toggleView = () => {
+    setIsFolderView((prev) => !prev); // Toggle between views
   };
 
   // Function to extract first few words from a message
@@ -155,6 +161,8 @@ const App = () => {
       onDeleteChat={handleDeleteChat}
       onSelectChat={handleSelectChat}
       onReorderChats={handleReorderChats} // Pass the handler
+      isFolderView={isFolderView} // Pass the new state
+      onToggleView={toggleView} // Pass the toggle function
     />
   );
 
@@ -222,12 +230,23 @@ const App = () => {
             </IconButton>
           </>
         )}
-        <ChatWindow
-          messages={
-            chats.find((chat) => chat.id === selectedChatId)?.messages || []
-          }
-          onSendMessage={handleSendMessage}
-        />
+        {/* Conditionally render based on isFolderView */}
+        {isFolderView ? (
+          <FolderDisplay
+            chats={chats}
+            onEditChat={handleEditChat}
+            onDeleteChat={handleDeleteChat}
+            onSelectChat={handleSelectChat}
+            onReorderChats={handleReorderChats}
+          />
+        ) : (
+          <ChatWindow
+            messages={
+              chats.find((chat) => chat.id === selectedChatId)?.messages || []
+            }
+            onSendMessage={handleSendMessage}
+          />
+        )}
       </Box>
     </Box>
   );
