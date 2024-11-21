@@ -1,5 +1,5 @@
 // FolderDisplay.jsx
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useRef, useEffect } from 'react';
 import {
   Box,
   Typography,
@@ -27,17 +27,18 @@ import {
   ExpandLess as ExpandLessIcon,
   ExpandMore as ExpandMoreIcon,
   Search as SearchIcon,
+  CreateNewFolder as CreateNewFolderIcon,
 } from '@mui/icons-material';
 import PropTypes from 'prop-types';
 import { ThemeContext } from '@emotion/react';
-import CreateNewFolderIcon from '@mui/icons-material/CreateNewFolder';
+
 const FolderDisplay = ({
-  chats,
-  onEditChat,
-  onDeleteChat,
-  onSelectChat,
-  onReorderChats,
-}) => {
+                         chats,
+                         onEditChat,
+                         onDeleteChat,
+                         onSelectChat,
+                         onReorderChats,
+                       }) => {
   const [folders, setFolders] = useState([
     {
       id: 1,
@@ -57,6 +58,16 @@ const FolderDisplay = ({
   const [searchQuery, setSearchQuery] = useState('');
 
   const { themeMode } = useContext(ThemeContext); // Utilize ThemeContext if needed
+
+  // Ref to focus the TextField when editing starts
+  const inputRef = useRef(null);
+
+  useEffect(() => {
+    if (editingFolder !== null && inputRef.current) {
+      inputRef.current.focus();
+      inputRef.current.select();
+    }
+  }, [editingFolder]);
 
   const handleAddFolder = (parentId = null) => {
     if (newFolderName.trim() === '') return;
@@ -86,11 +97,11 @@ const FolderDisplay = ({
 
   const toggleFolder = (folderId) => {
     setFolders((prevFolders) =>
-      prevFolders.map((folder) =>
-        folder.id === folderId
-          ? { ...folder, isExpanded: !folder.isExpanded }
-          : folder
-      )
+        prevFolders.map((folder) =>
+            folder.id === folderId
+                ? { ...folder, isExpanded: !folder.isExpanded }
+                : folder
+        )
     );
   };
 
@@ -105,255 +116,272 @@ const FolderDisplay = ({
 
   const renderFolders = (parentId = null, level = 0) => {
     return folders
-      .filter((folder) => folder.parentId === parentId && filterFolders(folder))
-      .map((folder) => (
-        <Box key={folder.id}>
-          <ListItem
-            sx={{
-              pl: 2 * level, // Consistent indentation
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-            }}
-          >
-            <Box display="flex" alignItems="center">
-              {/* Add '|' before icon for child folders only */}
-              {folder.parentId !== null && (
-                <Typography variant="body1" sx={{ mr: 0.5 }}>
-                  |
-                </Typography>
-              )}
-              <IconButton
-                size="small"
-                onClick={() => toggleFolder(folder.id)}
-                sx={{ mr: 1 }}
-                aria-label={
-                  folder.isExpanded ? 'Collapse folder' : 'Expand folder'
-                }
-              >
-                {folder.isExpanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-              </IconButton>
-              {folder.isExpanded ? (
-                <FolderOpenIcon sx={{ mr: 1 }} />
-              ) : (
-                <FolderIcon sx={{ mr: 1 }} />
-              )}
-              <Typography variant="body1">{folder.name}</Typography>
-
-              <Tooltip title="Add Subfolder">
-                <IconButton
-                  size="small"
-                  sx={{ ml: 1 }}
-                  onClick={() => {
-                    setOpen(true);
-                    setSelectedParentFolder(folder.id);
+        .filter((folder) => folder.parentId === parentId && filterFolders(folder))
+        .map((folder) => (
+            <Box key={folder.id}>
+              <ListItem
+                  sx={{
+                    pl: 2 * level, // Consistent indentation
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
                   }}
-                  aria-label="Add subfolder"
-                >
-                  <AddIcon fontSize="small" />
-                </IconButton>
-              </Tooltip>
-            </Box>
-
-            {folder.id !== 1 && (
-              <IconButton
-                size="small"
-                onClick={(e) => handleMenuOpen(e, folder)}
-                aria-label="More options"
               >
-                <MoreVertIcon />
-              </IconButton>
-            )}
-          </ListItem>
+                <Box display="flex" alignItems="center">
+                  {/* Add '|' before icon for child folders only */}
+                  {folder.parentId !== null && (
+                      <Typography variant="body1" sx={{ mr: 0.5 }}>
+                        |
+                      </Typography>
+                  )}
+                  <IconButton
+                      size="small"
+                      onClick={() => toggleFolder(folder.id)}
+                      sx={{ mr: 1 }}
+                      aria-label={
+                        folder.isExpanded ? 'Collapse folder' : 'Expand folder'
+                      }
+                  >
+                    {folder.isExpanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+                  </IconButton>
+                  {folder.isExpanded ? (
+                      <FolderOpenIcon sx={{ mr: 1 }} />
+                  ) : (
+                      <FolderIcon sx={{ mr: 1 }} />
+                  )}
 
-          {folder.isExpanded && renderFolders(folder.id, level + 1)}
-        </Box>
-      ));
+                  {/* Conditionally render TextField or Typography based on editing state */}
+                  {editingFolder === folder.id ? (
+                      <TextField
+                          value={editingFolderName}
+                          onChange={(e) => setEditingFolderName(e.target.value)}
+                          onBlur={() => handleSaveFolderName(folder.id)}
+                          onKeyDown={(e) => handleKeyDown(e, folder.id)}
+                          variant="standard"
+                          inputRef={inputRef}
+                          sx={{ mr: 1, minWidth: '150px' }}
+                      />
+                  ) : (
+                      <Typography
+                          variant="body1"
+                          onDoubleClick={() => handleDoubleClick(folder.id, folder.name)}
+                          sx={{
+                            cursor: 'pointer',
+                            userSelect: 'none',
+                            mr: 1,
+                          }}
+                      >
+                        {folder.name}
+                      </Typography>
+                  )}
+
+                  <Tooltip title="Add Subfolder">
+                    <IconButton
+                        size="small"
+                        sx={{ ml: 1 }}
+                        onClick={() => {
+                          setOpen(true);
+                          setSelectedParentFolder(folder.id);
+                        }}
+                        aria-label="Add subfolder"
+                    >
+                      <AddIcon fontSize="small" />
+                    </IconButton>
+                  </Tooltip>
+                </Box>
+
+                {folder.id !== 1 && (
+                    <IconButton
+                        size="small"
+                        onClick={(e) => handleMenuOpen(e, folder)}
+                        aria-label="More options"
+                    >
+                      <MoreVertIcon />
+                    </IconButton>
+                )}
+              </ListItem>
+
+              {folder.isExpanded && renderFolders(folder.id, level + 1)}
+            </Box>
+        ));
+  };
+
+  // Handle double-click to start editing
+  const handleDoubleClick = (folderId, folderName) => {
+    setEditingFolder(folderId);
+    setEditingFolderName(folderName);
+  };
+
+  // Save the new folder name
+  const handleSaveFolderName = (folderId) => {
+    const trimmedName = editingFolderName.trim();
+    if (trimmedName === '') {
+      alert('Folder name cannot be empty.');
+      return;
+    }
+
+    setFolders((prevFolders) =>
+        prevFolders.map((folder) =>
+            folder.id === folderId ? { ...folder, name: trimmedName } : folder
+        )
+    );
+    setEditingFolder(null);
+    setEditingFolderName('');
+  };
+
+  // Handle key presses in the TextField
+  const handleKeyDown = (e, folderId) => {
+    if (e.key === 'Enter') {
+      handleSaveFolderName(folderId);
+    } else if (e.key === 'Escape') {
+      setEditingFolder(null);
+      setEditingFolderName('');
+    }
   };
 
   return (
-    <Paper
-      elevation={0}
-      sx={{
-        p: 3,
-        bgcolor: 'background.default',
-        width: {
-          xs: '100%', // Full width on phones
-          sm: '90%', // 90% on small tablets
-          md: '80%', // 80% on tablets
-          lg: '60%', // 60% on larger screens
-        },
-      }}
-    >
-      <Stack spacing={3} sx={{ pt: 6 }}>
-        {/* Search and Add Root Folder */}
-        <Box
-          display="flex"
-          alignItems="center"
+      <Paper
+          elevation={0}
           sx={{
-            border: '1px solid',
-            borderColor: 'divider',
-            borderRadius: 1,
-            overflow: 'hidden',
+            p: 3,
+            bgcolor: 'background.default',
+            width: {
+              xs: '100%', // Full width on phones
+              sm: '90%', // 90% on small tablets
+              md: '80%', // 80% on tablets
+              lg: '60%', // 60% on larger screens
+            },
           }}
-        >
-          <TextField
-            variant="standard"
-            placeholder="Search folders"
-            value={searchQuery}
-            onChange={handleSearchChange}
-            InputProps={{
-              disableUnderline: true,
-              startAdornment: (
-                <InputAdornment position="start" sx={{ ml: 1 }}>
-                  <SearchIcon sx={{ color: 'action.active' }} />
-                </InputAdornment>
-              ),
-            }}
-            sx={{
-              flexGrow: 1,
-              '& .MuiInputBase-root': {
-                pl: 0,
-              },
-              '& .MuiInputBase-input': {
-                py: 1,
-                px: 1,
-              },
-            }}
-          />
-          <Tooltip title="Add Root Folder">
-            <IconButton
-              onClick={() => {
-                setSelectedParentFolder(null);
-                setOpen(true);
-              }}
-              sx={{
-                borderLeft: '1px solid',
-                borderColor: 'divider',
-                borderRadius: 0,
-                px: 1,
-              }}
-            >
-              <CreateNewFolderIcon />
-            </IconButton>
-          </Tooltip>
-        </Box>
-
-        {/* Folder List */}
-        <List>{renderFolders()}</List>
-      </Stack>
-
-      {/* Menu for Edit/Delete */}
-      <Menu
-        anchorEl={anchorEl}
-        open={Boolean(anchorEl)}
-        onClose={handleMenuClose}
       >
-        <MenuItem
-          onClick={() => {
-            setEditingFolder(selectedFolder.id);
-            setEditingFolderName(selectedFolder.name);
-            handleMenuClose();
-          }}
-        >
-          Edit
-        </MenuItem>
-        <MenuItem
-          onClick={() => {
-            // Check if the folder has subfolders before deleting
-            const hasChildren = folders.some(
-              (f) => f.parentId === selectedFolder.id
-            );
-            if (hasChildren) {
-              alert('Cannot delete a folder that contains subfolders.');
-            } else {
-              setFolders((prevFolders) =>
-                prevFolders.filter((folder) => folder.id !== selectedFolder.id)
-              );
-            }
-            handleMenuClose();
-          }}
-        >
-          Delete
-        </MenuItem>
-      </Menu>
-
-      {/* Add Folder Dialog */}
-      <Dialog open={open} onClose={() => setOpen(false)}>
-        <DialogTitle>Add New Folder</DialogTitle>
-        <DialogContent>
-          <TextField
-            autoFocus
-            margin="dense"
-            label="Folder Name"
-            type="text"
-            fullWidth
-            variant="standard"
-            value={newFolderName}
-            onChange={(e) => setNewFolderName(e.target.value)}
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setOpen(false)}>Cancel</Button>
-          <Button
-            onClick={() => handleAddFolder(selectedParentFolder)}
-            disabled={newFolderName.trim() === ''}
+        <Stack spacing={3} sx={{ pt: 6 }}>
+          {/* Search and Add Root Folder */}
+          <Box
+              display="flex"
+              alignItems="center"
+              sx={{
+                border: '1px solid',
+                borderColor: 'divider',
+                borderRadius: 1,
+                overflow: 'hidden',
+              }}
           >
-            Add Folder
-          </Button>
-        </DialogActions>
-      </Dialog>
+            <TextField
+                variant="standard"
+                placeholder="Search folders"
+                value={searchQuery}
+                onChange={handleSearchChange}
+                InputProps={{
+                  disableUnderline: true,
+                  startAdornment: (
+                      <InputAdornment position="start" sx={{ ml: 1 }}>
+                        <SearchIcon sx={{ color: 'action.active' }} />
+                      </InputAdornment>
+                  ),
+                }}
+                sx={{
+                  flexGrow: 1,
+                  '& .MuiInputBase-root': {
+                    pl: 0,
+                  },
+                  '& .MuiInputBase-input': {
+                    py: 1,
+                    px: 1,
+                  },
+                }}
+            />
+            <Tooltip title="Add Root Folder">
+              <IconButton
+                  onClick={() => {
+                    setSelectedParentFolder(null);
+                    setOpen(true);
+                  }}
+                  sx={{
+                    borderLeft: '1px solid',
+                    borderColor: 'divider',
+                    borderRadius: 0,
+                    px: 1,
+                  }}
+              >
+                <CreateNewFolderIcon />
+              </IconButton>
+            </Tooltip>
+          </Box>
 
-      {/* Edit Folder Dialog */}
-      {editingFolder !== null && (
-        <Dialog
-          open={editingFolder !== null}
-          onClose={() => setEditingFolder(null)}
+          {/* Folder List */}
+          <List>{renderFolders()}</List>
+        </Stack>
+
+        {/* Menu for Edit/Delete */}
+        <Menu
+            anchorEl={anchorEl}
+            open={Boolean(anchorEl)}
+            onClose={handleMenuClose}
         >
-          <DialogTitle>Edit Folder</DialogTitle>
+          <MenuItem
+              onClick={() => {
+                setEditingFolder(selectedFolder.id);
+                setEditingFolderName(selectedFolder.name);
+                handleMenuClose();
+              }}
+          >
+            Edit
+          </MenuItem>
+          <MenuItem
+              onClick={() => {
+                // Check if the folder has subfolders before deleting
+                const hasChildren = folders.some(
+                    (f) => f.parentId === selectedFolder.id
+                );
+                if (hasChildren) {
+                  alert('Cannot delete a folder that contains subfolders.');
+                } else {
+                  setFolders((prevFolders) =>
+                      prevFolders.filter((folder) => folder.id !== selectedFolder.id)
+                  );
+                }
+                handleMenuClose();
+              }}
+          >
+            Delete
+          </MenuItem>
+        </Menu>
+
+        {/* Add Folder Dialog */}
+        <Dialog open={open} onClose={() => setOpen(false)}>
+          <DialogTitle>Add New Folder</DialogTitle>
           <DialogContent>
             <TextField
-              autoFocus
-              margin="dense"
-              label="Folder Name"
-              type="text"
-              fullWidth
-              variant="standard"
-              value={editingFolderName}
-              onChange={(e) => setEditingFolderName(e.target.value)}
+                autoFocus
+                margin="dense"
+                label="Folder Name"
+                type="text"
+                fullWidth
+                variant="standard"
+                value={newFolderName}
+                onChange={(e) => setNewFolderName(e.target.value)}
             />
           </DialogContent>
           <DialogActions>
-            <Button onClick={() => setEditingFolder(null)}>Cancel</Button>
+            <Button onClick={() => setOpen(false)}>Cancel</Button>
             <Button
-              onClick={() => {
-                setFolders((prevFolders) =>
-                  prevFolders.map((folder) =>
-                    folder.id === editingFolder
-                      ? { ...folder, name: editingFolderName }
-                      : folder
-                  )
-                );
-                setEditingFolder(null);
-              }}
-              disabled={editingFolderName.trim() === ''}
+                onClick={() => handleAddFolder(selectedParentFolder)}
+                disabled={newFolderName.trim() === ''}
             >
-              Save
+              Add Folder
             </Button>
           </DialogActions>
         </Dialog>
-      )}
-    </Paper>
+      </Paper>
   );
 };
 
 FolderDisplay.propTypes = {
   chats: PropTypes.arrayOf(
-    PropTypes.shape({
-      id: PropTypes.number.isRequired,
-      title: PropTypes.string.isRequired,
-      messages: PropTypes.array.isRequired,
-    })
+      PropTypes.shape({
+        id: PropTypes.number.isRequired,
+        title: PropTypes.string.isRequired,
+        messages: PropTypes.array.isRequired,
+      })
   ).isRequired,
   onEditChat: PropTypes.func.isRequired,
   onDeleteChat: PropTypes.func.isRequired,
