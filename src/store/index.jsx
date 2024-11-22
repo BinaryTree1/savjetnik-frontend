@@ -2,123 +2,134 @@
 import { create } from 'zustand';
 
 const useStore = create((set, get) => ({
-    // Sidebar State
-    isSidebarOpen: true,
-    toggleSidebar: () =>
-        set((state) => ({
-            isSidebarOpen: !state.isSidebarOpen,
-        })),
+  // Sidebar State
+  isSidebarOpen: true,
+  toggleSidebar: () =>
+    set((state) => ({
+      isSidebarOpen: !state.isSidebarOpen,
+    })),
 
-    // View State
-    isFolderView: false,
-    toggleFolderView: () =>
-        set((state) => ({
-            isFolderView: !state.isFolderView,
-        })),
+  // View State
+  isFolderView: false,
+  toggleFolderView: () =>
+    set((state) => ({
+      isFolderView: !state.isFolderView,
+    })),
 
-    // Chats State
-    chats: [{ id: 1, title: '', messages: [] }],
-    selectedChatId: 1,
+  // Chats State
+  chats: [{ id: 1, title: '', messages: [] }],
+  selectedChatId: 1,
 
-    addChat: () => {
-        const chats = get().chats;
-        const emptyChatIndex = chats.findIndex((chat) => chat.messages.length === 0);
-        if (emptyChatIndex !== -1) {
-            const emptyChat = chats[emptyChatIndex];
-            const updatedChats = [emptyChat, ...chats.filter((_, idx) => idx !== emptyChatIndex)];
-            set({ chats: updatedChats, selectedChatId: emptyChat.id });
-        } else {
-            const newChatId = chats.length > 0 ? Math.max(...chats.map((chat) => chat.id)) + 1 : 1;
-            const newChat = { id: newChatId, title: '', messages: [] };
-            set((state) => ({
-                chats: [newChat, ...state.chats],
-                selectedChatId: newChatId,
-            }));
+  addChat: () => {
+    const chats = get().chats;
+    const emptyChatIndex = chats.findIndex(
+      (chat) => chat.messages.length === 0
+    );
+    if (emptyChatIndex !== -1) {
+      const emptyChat = chats[emptyChatIndex];
+      const updatedChats = [
+        emptyChat,
+        ...chats.filter((_, idx) => idx !== emptyChatIndex),
+      ];
+      set({ chats: updatedChats, selectedChatId: emptyChat.id });
+    } else {
+      const newChatId =
+        chats.length > 0 ? Math.max(...chats.map((chat) => chat.id)) + 1 : 1;
+      const newChat = { id: newChatId, title: '', messages: [] };
+      set((state) => ({
+        chats: [newChat, ...state.chats],
+        selectedChatId: newChatId,
+      }));
+    }
+  },
+
+  editChat: (chatId, newTitle) =>
+    set((state) => ({
+      chats: state.chats.map((chat) =>
+        chat.id === chatId ? { ...chat, title: newTitle } : chat
+      ),
+    })),
+
+  deleteChat: (chatId) =>
+    set((state) => {
+      const updatedChats = state.chats.filter((chat) => chat.id !== chatId);
+      const selectedChatId =
+        state.selectedChatId === chatId
+          ? updatedChats[0]?.id || null
+          : state.selectedChatId;
+      return { chats: updatedChats, selectedChatId };
+    }),
+
+  selectChat: (chatId) => set({ selectedChatId: chatId }),
+
+  sendMessage: (messageText) => {
+    const selectedChatId = get().selectedChatId;
+    if (!selectedChatId) return;
+    set((state) => {
+      const chats = state.chats.map((chat) => {
+        if (chat.id === selectedChatId) {
+          const isFirstMessage = chat.messages.length === 0;
+          const updatedMessages = [
+            ...chat.messages,
+            { text: messageText, sender: 'user' },
+          ];
+          const updatedTitle = isFirstMessage
+            ? messageText.split(' ').slice(0, 3).join(' ')
+            : chat.title;
+          return { ...chat, messages: updatedMessages, title: updatedTitle };
         }
-    },
+        return chat;
+      });
+      return { chats };
+    });
 
-    editChat: (chatId, newTitle) =>
-        set((state) => ({
-            chats: state.chats.map((chat) =>
-                chat.id === chatId ? { ...chat, title: newTitle } : chat
-            ),
-        })),
-
-    deleteChat: (chatId) =>
-        set((state) => {
-            const updatedChats = state.chats.filter((chat) => chat.id !== chatId);
-            const selectedChatId =
-                state.selectedChatId === chatId ? updatedChats[0]?.id || null : state.selectedChatId;
-            return { chats: updatedChats, selectedChatId };
-        }),
-
-    selectChat: (chatId) => set({ selectedChatId: chatId }),
-
-    sendMessage: (messageText) => {
-        const selectedChatId = get().selectedChatId;
-        if (!selectedChatId) return;
-        set((state) => {
-            const chats = state.chats.map((chat) => {
-                if (chat.id === selectedChatId) {
-                    const isFirstMessage = chat.messages.length === 0;
-                    const updatedMessages = [...chat.messages, { text: messageText, sender: 'user' }];
-                    const updatedTitle = isFirstMessage
-                        ? messageText.split(' ').slice(0, 3).join(' ')
-                        : chat.title;
-                    return { ...chat, messages: updatedMessages, title: updatedTitle };
-                }
-                return chat;
-            });
-            return { chats };
+    // Simulate bot response
+    setTimeout(() => {
+      set((state) => {
+        const chats = state.chats.map((chat) => {
+          if (chat.id === selectedChatId) {
+            const updatedMessages = [
+              ...chat.messages,
+              { text: 'This is a bot response.', sender: 'bot' },
+            ];
+            return { ...chat, messages: updatedMessages };
+          }
+          return chat;
         });
+        return { chats };
+      });
+    }, 1000);
+  },
 
-        // Simulate bot response
-        setTimeout(() => {
-            set((state) => {
-                const chats = state.chats.map((chat) => {
-                    if (chat.id === selectedChatId) {
-                        const updatedMessages = [
-                            ...chat.messages,
-                            { text: 'This is a bot response.', sender: 'bot' },
-                        ];
-                        return { ...chat, messages: updatedMessages };
-                    }
-                    return chat;
-                });
-                return { chats };
-            });
-        }, 1000);
+  reorderChats: (newChatsOrder) => set({ chats: newChatsOrder }),
+
+  // Folders State
+  folders: [
+    {
+      id: 1,
+      name: 'Root',
+      chatIds: [],
+      parentId: null,
+      isExpanded: true,
     },
+  ],
 
-    reorderChats: (newChatsOrder) => set({ chats: newChatsOrder }),
+  addFolder: (newFolder) =>
+    set((state) => ({
+      folders: [...state.folders, newFolder],
+    })),
 
-    // Folders State
-    folders: [
-        {
-            id: 1,
-            name: 'Root',
-            chatIds: [],
-            parentId: null,
-            isExpanded: true,
-        },
-    ],
+  updateFolder: (updatedFolder) =>
+    set((state) => ({
+      folders: state.folders.map((folder) =>
+        folder.id === updatedFolder.id ? updatedFolder : folder
+      ),
+    })),
 
-    addFolder: (newFolder) =>
-        set((state) => ({
-            folders: [...state.folders, newFolder],
-        })),
-
-    updateFolder: (updatedFolder) =>
-        set((state) => ({
-            folders: state.folders.map((folder) =>
-                folder.id === updatedFolder.id ? updatedFolder : folder
-            ),
-        })),
-
-    deleteFolder: (folderId) =>
-        set((state) => ({
-            folders: state.folders.filter((folder) => folder.id !== folderId),
-        })),
+  deleteFolder: (folderId) =>
+    set((state) => ({
+      folders: state.folders.filter((folder) => folder.id !== folderId),
+    })),
 }));
 
 export default useStore;
