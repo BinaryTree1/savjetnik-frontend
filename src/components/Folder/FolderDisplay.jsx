@@ -13,9 +13,9 @@ import {
   CreateNewFolder as CreateNewFolderIcon,
   Search as SearchIcon,
 } from '@mui/icons-material';
-import useStore from '../store';
-import FolderList from './FolderList';
-import AddFolderDialog from './AddFolderDialog';
+import useStore from '../../store/index.jsx';
+import FolderList from './FolderList.jsx';
+import AddFolderDialog from './AddFolderDialog.jsx';
 
 const FolderDisplay = () => {
   // Zustand store actions and state

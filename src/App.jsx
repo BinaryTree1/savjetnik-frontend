@@ -1,8 +1,8 @@
 // App.js
 import React, { useContext } from 'react';
-import Sidebar from './components/Sidebar.jsx';
+import Sidebar from './components/Sidebar/Sidebar.jsx';
 import ChatWindow from './components/ChatWindow.jsx';
-import FolderDisplay from './components/FolderDisplay.jsx';
+import FolderDisplay from './components/Folder/FolderDisplay.jsx';
 import {
   Box,
   Drawer,

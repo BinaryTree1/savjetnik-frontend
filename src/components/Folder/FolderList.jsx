@@ -2,7 +2,7 @@
 import React from 'react';
 import { List } from '@mui/material';
 import FolderItem from './FolderItem.jsx';
-import useStore from '../store';
+import useStore from '../../store/index.jsx';
 
 const FolderList = ({
   parentId = null,

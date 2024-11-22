@@ -16,9 +16,9 @@ import {
   ExpandMore as ExpandMoreIcon,
   Add as AddIcon,
 } from '@mui/icons-material';
-import useStore from '../store';
-import FolderList from './FolderList';
-import MoreOptionsMenu from './MoreOptionsMenu';
+import useStore from '../../store/index.jsx';
+import FolderList from './FolderList.jsx';
+import MoreOptionsMenu from './MoreOptionsMenu.jsx';
 
 const FolderItem = ({
   folder,

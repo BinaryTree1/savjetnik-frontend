@@ -2,7 +2,7 @@
 import React from 'react';
 import { Menu, MenuItem } from '@mui/material';
 import { Edit as EditIcon, Delete as DeleteIcon } from '@mui/icons-material';
-import useStore from '../store';
+import useStore from '../../store/index.jsx';
 
 const MoreOptionsMenu = ({ anchorEl, open, onClose, folder }) => {
   const updateFolder = useStore((state) => state.updateFolder);
