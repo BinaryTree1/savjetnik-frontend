@@ -15,13 +15,13 @@ import {
 import PropTypes from 'prop-types';
 
 const SidebarItem = ({
-                       id,
-                       title,
-                       selected,
-                       onEdit = () => {},
-                       onDelete = () => {},
-                       onClick = () => {},
-                     }) => {
+  id,
+  title,
+  selected,
+  onEdit = () => {},
+  onDelete = () => {},
+  onClick = () => {},
+}) => {
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
 
@@ -49,54 +49,54 @@ const SidebarItem = ({
   };
 
   return (
-      <ListItemButton
-          onClick={handleItemClick}
-          sx={{
-            paddingLeft: 2,
-            paddingRight: 2,
-            bgcolor: selected ? 'action.selected' : 'inherit',
-            '&:hover': {
-              bgcolor: 'action.hover',
-            },
-          }}
+    <ListItemButton
+      onClick={handleItemClick}
+      sx={{
+        paddingLeft: 2,
+        paddingRight: 2,
+        bgcolor: selected ? 'action.selected' : 'inherit',
+        '&:hover': {
+          bgcolor: 'action.hover',
+        },
+      }}
+    >
+      <ListItemText
+        primary={title}
+        primaryTypographyProps={{
+          sx: {
+            whiteSpace: 'nowrap',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            maxWidth: '85%',
+          },
+        }}
+      />
+      <IconButton edge="end" aria-label="more" onClick={handleMenuOpen}>
+        <MoreVertIcon />
+      </IconButton>
+      <Menu
+        anchorEl={anchorEl}
+        open={open}
+        onClose={handleMenuClose}
+        anchorOrigin={{
+          vertical: 'top',
+          horizontal: 'right',
+        }}
+        transformOrigin={{
+          vertical: 'top',
+          horizontal: 'right',
+        }}
       >
-        <ListItemText
-            primary={title}
-            primaryTypographyProps={{
-              sx: {
-                whiteSpace: 'nowrap',
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
-                maxWidth: '85%',
-              },
-            }}
-        />
-        <IconButton edge="end" aria-label="more" onClick={handleMenuOpen}>
-          <MoreVertIcon />
-        </IconButton>
-        <Menu
-            anchorEl={anchorEl}
-            open={open}
-            onClose={handleMenuClose}
-            anchorOrigin={{
-              vertical: 'top',
-              horizontal: 'right',
-            }}
-            transformOrigin={{
-              vertical: 'top',
-              horizontal: 'right',
-            }}
-        >
-          <MenuItem onClick={handleEdit}>
-            <EditIcon fontSize="small" style={{ marginRight: 8 }} />
-            Edit
-          </MenuItem>
-          <MenuItem onClick={handleDelete}>
-            <DeleteIcon fontSize="small" style={{ marginRight: 8 }} />
-            Delete
-          </MenuItem>
-        </Menu>
-      </ListItemButton>
+        <MenuItem onClick={handleEdit}>
+          <EditIcon fontSize="small" style={{ marginRight: 8 }} />
+          Edit
+        </MenuItem>
+        <MenuItem onClick={handleDelete}>
+          <DeleteIcon fontSize="small" style={{ marginRight: 8 }} />
+          Delete
+        </MenuItem>
+      </Menu>
+    </ListItemButton>
   );
 };
 

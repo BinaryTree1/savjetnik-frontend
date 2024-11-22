@@ -1,15 +1,13 @@
 // src/components/Sidebar/SidebarItems.jsx
 import React, { useState, useMemo } from 'react';
-import {
-  Typography,
-} from '@mui/material';
+import { Typography } from '@mui/material';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import useDebounce from '../../hooks/useDebounce.jsx';
 import useStore from '../../store';
 import SidebarItem from './SidebarItem.jsx';
 import SidebarSearch from './SidebarSearch.jsx';
-import RenameChatDialog from "./RenameChatDialog.jsx";
-import DeleteChatDialog from "./DeleteChatDialog.jsx";
+import RenameChatDialog from './RenameChatDialog.jsx';
+import DeleteChatDialog from './DeleteChatDialog.jsx';
 
 const SidebarItems = () => {
   const chats = useStore((state) => state.chats);
@@ -53,7 +51,7 @@ const SidebarItems = () => {
 
     const lowercasedQuery = debouncedSearchQuery.toLowerCase();
     return activeChats.filter((chat) =>
-        chat.title.toLowerCase().includes(lowercasedQuery)
+      chat.title.toLowerCase().includes(lowercasedQuery)
     );
   }, [chats, debouncedSearchQuery]);
 
@@ -114,76 +112,76 @@ const SidebarItems = () => {
   };
 
   return (
-      <DragDropContext onDragEnd={handleDragEnd}>
-        <Droppable droppableId="sidebar-chats-droppable">
-          {(provided) => (
-              <div ref={provided.innerRef} {...provided.droppableProps}>
-                {/* Search Bar */}
-                <SidebarSearch
-                    searchQuery={searchQuery}
-                    onSearchChange={handleSearchChange}
-                />
+    <DragDropContext onDragEnd={handleDragEnd}>
+      <Droppable droppableId="sidebar-chats-droppable">
+        {(provided) => (
+          <div ref={provided.innerRef} {...provided.droppableProps}>
+            {/* Search Bar */}
+            <SidebarSearch
+              searchQuery={searchQuery}
+              onSearchChange={handleSearchChange}
+            />
 
-                {/* Display "No chats" message if there are no chats after filtering */}
-                {filteredChats.length === 0 ? (
-                    <Typography
-                        variant="body2"
-                        color="textSecondary"
-                        align="center"
-                        p={2}
+            {/* Display "No chats" message if there are no chats after filtering */}
+            {filteredChats.length === 0 ? (
+              <Typography
+                variant="body2"
+                color="textSecondary"
+                align="center"
+                p={2}
+              >
+                {searchQuery.trim() === ''
+                  ? 'No chats.'
+                  : 'No chats match your search.'}
+              </Typography>
+            ) : (
+              filteredChats.map((chat, index) => (
+                <Draggable
+                  key={chat.id.toString()}
+                  draggableId={chat.id.toString()}
+                  index={index}
+                >
+                  {(provided) => (
+                    <div
+                      ref={provided.innerRef}
+                      {...provided.draggableProps}
+                      {...provided.dragHandleProps}
                     >
-                      {searchQuery.trim() === ''
-                          ? 'No chats.'
-                          : 'No chats match your search.'}
-                    </Typography>
-                ) : (
-                    filteredChats.map((chat, index) => (
-                        <Draggable
-                            key={chat.id.toString()}
-                            draggableId={chat.id.toString()}
-                            index={index}
-                        >
-                          {(provided) => (
-                              <div
-                                  ref={provided.innerRef}
-                                  {...provided.draggableProps}
-                                  {...provided.dragHandleProps}
-                              >
-                                <SidebarItem
-                                    id={chat.id}
-                                    title={chat.title || 'Untitled Chat'}
-                                    selected={chat.id === selectedChatId}
-                                    onEdit={handleOpenRenameDialog}
-                                    onDelete={handleOpenDeleteDialog}
-                                    onClick={selectChat}
-                                />
-                              </div>
-                          )}
-                        </Draggable>
-                    ))
-                )}
-                {provided.placeholder}
-              </div>
-          )}
-        </Droppable>
+                      <SidebarItem
+                        id={chat.id}
+                        title={chat.title || 'Untitled Chat'}
+                        selected={chat.id === selectedChatId}
+                        onEdit={handleOpenRenameDialog}
+                        onDelete={handleOpenDeleteDialog}
+                        onClick={selectChat}
+                      />
+                    </div>
+                  )}
+                </Draggable>
+              ))
+            )}
+            {provided.placeholder}
+          </div>
+        )}
+      </Droppable>
 
-        {/* Rename Dialog */}
-        <RenameChatDialog
-            open={isRenameDialogOpen}
-            onClose={handleCloseRenameDialog}
-            chatTitle={newChatTitle}
-            setChatTitle={setNewChatTitle}
-            onConfirm={handleConfirmRename}
-        />
+      {/* Rename Dialog */}
+      <RenameChatDialog
+        open={isRenameDialogOpen}
+        onClose={handleCloseRenameDialog}
+        chatTitle={newChatTitle}
+        setChatTitle={setNewChatTitle}
+        onConfirm={handleConfirmRename}
+      />
 
-        {/* Delete Dialog */}
-        <DeleteChatDialog
-            open={isDeleteDialogOpen}
-            onClose={handleCloseDeleteDialog}
-            chatTitle={chatToDelete?.title}
-            onConfirm={handleConfirmDelete}
-        />
-      </DragDropContext>
+      {/* Delete Dialog */}
+      <DeleteChatDialog
+        open={isDeleteDialogOpen}
+        onClose={handleCloseDeleteDialog}
+        chatTitle={chatToDelete?.title}
+        onConfirm={handleConfirmDelete}
+      />
+    </DragDropContext>
   );
 };
 
