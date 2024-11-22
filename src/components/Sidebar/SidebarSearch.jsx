@@ -1,4 +1,3 @@
-// src/components/Sidebar/SidebarSearch.jsx
 import React from 'react';
 import { Box, TextField, InputAdornment } from '@mui/material';
 import { Search as SearchIcon } from '@mui/icons-material';

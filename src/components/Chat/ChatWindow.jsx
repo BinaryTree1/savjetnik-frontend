@@ -1,7 +1,5 @@
-// src/components/Chat/ChatWindow.jsx
 import React, { useState } from 'react';
 import { Box } from '@mui/material';
-import { useTheme } from '@mui/material/styles';
 import ChatMessages from './ChatMessages.jsx';
 import ChatInput from './ChatInput.jsx';
 import useStore from '../../store/index.jsx';
@@ -13,7 +11,6 @@ import useStore from '../../store/index.jsx';
  */
 const ChatWindow = () => {
   const [message, setMessage] = useState('');
-  const theme = useTheme();
 
   const selectedChatId = useStore((state) => state.selectedChatId);
   const chats = useStore((state) => state.chats);

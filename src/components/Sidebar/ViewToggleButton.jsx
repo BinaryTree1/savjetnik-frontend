@@ -1,4 +1,3 @@
-// src/components/Sidebar/ViewToggleButton.jsx
 import React from 'react';
 import { Box, Button } from '@mui/material';
 import { Folder as FolderIcon, Chat as ChatIcon } from '@mui/icons-material';
@@ -24,7 +23,7 @@ const ViewToggleButton = () => {
             bgcolor: theme.palette.hover,
           },
           textTransform: 'none',
-          justifyContent: 'flex-start',
+          justifyContent: 'flex-center',
         }}
         aria-label={isFolderView ? 'Show Messages' : 'Show Saved Chats'}
       >

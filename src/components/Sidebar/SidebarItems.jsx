@@ -1,4 +1,3 @@
-// src/components/Sidebar/SidebarItems.jsx
 import React, { useState, useMemo } from 'react';
 import { Typography } from '@mui/material';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';

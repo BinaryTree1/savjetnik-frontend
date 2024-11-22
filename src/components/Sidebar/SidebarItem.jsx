@@ -1,4 +1,3 @@
-// src/components/Sidebar/SidebarItem.jsx
 import React, { useState } from 'react';
 import {
   ListItemButton,
