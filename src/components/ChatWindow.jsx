@@ -15,7 +15,7 @@ import {
   MenuBook,
 } from '@mui/icons-material';
 import { useTheme } from '@mui/material/styles';
-import Message from './Message.jsx';
+import ChatMessage from './ChatMessage.jsx';
 import useStore from '../store';
 
 const ChatWindow = () => {
@@ -147,7 +147,7 @@ const ChatWindow = () => {
       <Box flexGrow={1} overflow="auto" p={2}>
         {messages.length > 0 ? (
           messages.map((msg, index) => (
-            <Message key={index} text={msg.text} sender={msg.sender} />
+            <ChatMessage key={index} text={msg.text} sender={msg.sender} />
           ))
         ) : (
           <Box

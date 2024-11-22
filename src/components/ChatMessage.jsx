@@ -4,7 +4,7 @@ import { Box, Avatar, Typography } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import PropTypes from 'prop-types';
 
-const Message = ({ text, sender }) => {
+const ChatMessage = ({ text, sender }) => {
   const theme = useTheme();
 
   return (
@@ -80,9 +80,9 @@ const Message = ({ text, sender }) => {
   );
 };
 
-Message.propTypes = {
+ChatMessage.propTypes = {
   text: PropTypes.string.isRequired,
   sender: PropTypes.oneOf(['user', 'bot']).isRequired,
 };
 
-export default Message;
+export default ChatMessage;
