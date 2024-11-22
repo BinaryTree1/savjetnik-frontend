@@ -14,7 +14,6 @@ import DeleteChatDialog from './DeleteChatDialog.jsx';
  * Displays a searchable list of chat items with options to rename or delete each chat.
  */
 const SidebarItems = () => {
-
   const chats = useStore((state) => state.chats);
   const selectedChatId = useStore((state) => state.selectedChatId);
   const editChat = useStore((state) => state.editChat);
@@ -55,7 +54,7 @@ const SidebarItems = () => {
 
     const lowercasedQuery = debouncedSearchQuery.toLowerCase();
     return activeChats.filter((chat) =>
-        chat.title.toLowerCase().includes(lowercasedQuery)
+      chat.title.toLowerCase().includes(lowercasedQuery)
     );
   }, [chats, debouncedSearchQuery]);
 
@@ -104,56 +103,51 @@ const SidebarItems = () => {
   };
 
   return (
-      <div>
-        {/* Search Bar */}
-        <SidebarSearch
-            searchQuery={searchQuery}
-            onSearchChange={handleSearchChange}
-        />
+    <div>
+      {/* Search Bar */}
+      <SidebarSearch
+        searchQuery={searchQuery}
+        onSearchChange={handleSearchChange}
+      />
 
-        {/* Display "No chats" message if there are no chats after filtering */}
-        {filteredChats.length === 0 ? (
-            <Typography
-                variant="body2"
-                color="textSecondary"
-                align="center"
-                p={2}
-            >
-              {searchQuery.trim() === ''
-                  ? 'No chats available.'
-                  : 'No chats match your search.'}
-            </Typography>
-        ) : (
-            filteredChats.map((chat) => (
-                <SidebarItem
-                    key={chat.id.toString()}
-                    id={chat.id}
-                    title={chat.title || 'Untitled Chat'}
-                    selected={chat.id === selectedChatId}
-                    onEdit={handleOpenRenameDialog}
-                    onDelete={handleOpenDeleteDialog}
-                    onClick={selectChat}
-                />
-            ))
-        )}
+      {/* Display "No chats" message if there are no chats after filtering */}
+      {filteredChats.length === 0 ? (
+        <Typography variant="body2" color="textSecondary" align="center" p={2}>
+          {searchQuery.trim() === ''
+            ? 'No chats available.'
+            : 'No chats match your search.'}
+        </Typography>
+      ) : (
+        filteredChats.map((chat) => (
+          <SidebarItem
+            key={chat.id.toString()}
+            id={chat.id}
+            title={chat.title || 'Untitled Chat'}
+            selected={chat.id === selectedChatId}
+            onEdit={handleOpenRenameDialog}
+            onDelete={handleOpenDeleteDialog}
+            onClick={selectChat}
+          />
+        ))
+      )}
 
-        {/* Rename Dialog */}
-        <RenameChatDialog
-            open={isRenameDialogOpen}
-            onClose={handleCloseRenameDialog}
-            chatTitle={newChatTitle}
-            setChatTitle={setNewChatTitle}
-            onConfirm={handleConfirmRename}
-        />
+      {/* Rename Dialog */}
+      <RenameChatDialog
+        open={isRenameDialogOpen}
+        onClose={handleCloseRenameDialog}
+        chatTitle={newChatTitle}
+        setChatTitle={setNewChatTitle}
+        onConfirm={handleConfirmRename}
+      />
 
-        {/* Delete Dialog */}
-        <DeleteChatDialog
-            open={isDeleteDialogOpen}
-            onClose={handleCloseDeleteDialog}
-            chatTitle={chatToDelete?.title}
-            onConfirm={handleConfirmDelete}
-        />
-      </div>
+      {/* Delete Dialog */}
+      <DeleteChatDialog
+        open={isDeleteDialogOpen}
+        onClose={handleCloseDeleteDialog}
+        chatTitle={chatToDelete?.title}
+        onConfirm={handleConfirmDelete}
+      />
+    </div>
   );
 };
 
