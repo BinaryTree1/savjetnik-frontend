@@ -1,5 +1,5 @@
 // App.js
-import React from 'react';
+import React, {useContext} from 'react';
 import Sidebar from './components/Sidebar.jsx';
 import ChatWindow from './components/ChatWindow.jsx';
 import FolderDisplay from './components/FolderDisplay.jsx';
@@ -16,16 +16,22 @@ import {
   NightlightRound as NightlightRoundIcon,
 } from '@mui/icons-material';
 import useStore from './store';
+import {ThemeContext} from "./context/ThemeContext.jsx";
 
 const App = () => {
+
+    const { themeMode, setThemeMode } = useContext(ThemeContext);
   const theme = useTheme();
+
+
+  const toggleTheme = () => {
+      setThemeMode(themeMode === 'light' ? 'dark' : 'light');
+  };
+
   const isMobile = useMediaQuery(theme.breakpoints.down('xs'));
 
   const isSidebarOpen = useStore((state) => state.isSidebarOpen);
   const toggleSidebar = useStore((state) => state.toggleSidebar);
-
-  const themeMode = useStore((state) => state.themeMode);
-  const toggleTheme = useStore((state) => state.toggleThemeMode);
 
   const isFolderView = useStore((state) => state.isFolderView);
 

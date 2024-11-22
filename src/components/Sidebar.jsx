@@ -1,5 +1,5 @@
 // components/Sidebar.jsx
-import React from 'react';
+import React, {useContext} from 'react';
 import {
     Box,
     IconButton,
@@ -20,6 +20,7 @@ import {
 } from '@mui/icons-material';
 import SidebarItems from './SidebarItems';
 import useStore from '../store';
+import {ThemeContext} from "../context/ThemeContext.jsx";
 
 const Sidebar = () => {
     const muiTheme = useMuiTheme();
@@ -28,8 +29,11 @@ const Sidebar = () => {
     const isSidebarOpen = useStore((state) => state.isSidebarOpen);
     const toggleSidebar = useStore((state) => state.toggleSidebar);
 
-    const themeMode = useStore((state) => state.themeMode);
-    const toggleTheme = useStore((state) => state.toggleThemeMode);
+    const { themeMode, setThemeMode } = useContext(ThemeContext);
+
+    const toggleTheme = () => {
+        setThemeMode(themeMode === 'light' ? 'dark' : 'light');
+    };
 
     const isFolderView = useStore((state) => state.isFolderView);
     const toggleView = useStore((state) => state.toggleFolderView);
@@ -61,7 +65,7 @@ const Sidebar = () => {
         >
             {/* Header */}
             <Box display="flex" alignItems="center" justifyContent="space-between" p={2}>
-                {!isSidebarOpen && (
+                {isSidebarOpen && (
                     <Typography variant="subtitle1" noWrap color="text.primary">
                         Home Workspace
                     </Typography>
