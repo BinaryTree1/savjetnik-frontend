@@ -101,8 +101,6 @@ const useStore = create((set, get) => ({
     }, 1000);
   },
 
-  reorderChats: (newChatsOrder) => set({ chats: newChatsOrder }),
-
   // Folders State
   folders: [
     {
