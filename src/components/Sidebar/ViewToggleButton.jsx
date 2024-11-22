@@ -1,3 +1,4 @@
+// src/components/Sidebar/ViewToggleButton.jsx
 import React from 'react';
 import { Box, Button } from '@mui/material';
 import { Folder as FolderIcon, Chat as ChatIcon } from '@mui/icons-material';
