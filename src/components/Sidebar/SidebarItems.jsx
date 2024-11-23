@@ -1,6 +1,7 @@
 // src/components/Sidebar/SidebarItems.jsx
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { Typography } from '@mui/material';
+import { Droppable, Draggable } from '@hello-pangea/dnd';
 import useDebounce from '../../hooks/useDebounce.jsx';
 import useStore from '../../store';
 import SidebarItem from './SidebarItem.jsx';
@@ -15,10 +16,19 @@ import DeleteChatDialog from './DeleteChatDialog.jsx';
  */
 const SidebarItems = () => {
   const chats = useStore((state) => state.chats);
+  const unfolderedChats = useStore((state) => state.unfolderedChats);
   const selectedChatId = useStore((state) => state.selectedChatId);
   const editChat = useStore((state) => state.editChat);
   const deleteChat = useStore((state) => state.deleteChat);
   const selectChat = useStore((state) => state.selectChat);
+  const initializeUnfolderedChats = useStore(
+      (state) => state.initializeUnfolderedChats
+  );
+
+  // Initialize unfoldered chats on component mount
+  useEffect(() => {
+    initializeUnfolderedChats();
+  }, [initializeUnfolderedChats]);
 
   // Local component states
   const [searchQuery, setSearchQuery] = useState('');
@@ -44,8 +54,11 @@ const SidebarItems = () => {
    * and ensure stable references unless dependencies change.
    */
   const filteredChats = useMemo(() => {
+    // Get unfoldered chats
+    const chatsList = chats.filter((chat) => unfolderedChats.includes(chat.id));
+
     // Filter chats that have at least one message
-    const activeChats = chats.filter((chat) => chat.messages.length > 0);
+    const activeChats = chatsList.filter((chat) => chat.messages.length > 0);
 
     // Further filter based on the search query
     if (!debouncedSearchQuery.trim()) {
@@ -54,9 +67,9 @@ const SidebarItems = () => {
 
     const lowercasedQuery = debouncedSearchQuery.toLowerCase();
     return activeChats.filter((chat) =>
-      chat.title.toLowerCase().includes(lowercasedQuery)
+        chat.title.toLowerCase().includes(lowercasedQuery)
     );
-  }, [chats, debouncedSearchQuery]);
+  }, [chats, unfolderedChats, debouncedSearchQuery]);
 
   // Handlers for Rename Dialog
   const handleOpenRenameDialog = (chatId) => {
@@ -103,55 +116,85 @@ const SidebarItems = () => {
   };
 
   return (
-    <div>
-      {/* Search Bar */}
-      <SidebarSearch
-        searchQuery={searchQuery}
-        onSearchChange={handleSearchChange}
-      />
+      <Droppable droppableId="sidebar-chats" type="CHAT">
+        {(provided, snapshot) => (
+            <div
+                ref={provided.innerRef}
+                {...provided.droppableProps}
+                style={{
+                  backgroundColor: snapshot.isDraggingOver ? 'lightblue' : 'inherit',
+                }}
+            >
+              {/* Search Bar */}
+              <SidebarSearch
+                  searchQuery={searchQuery}
+                  onSearchChange={handleSearchChange}
+              />
 
-      {/* Display "No chats" message if there are no chats after filtering */}
-      {filteredChats.length === 0 ? (
-        <Typography variant="body2" color="textSecondary" align="center" p={2}>
-          {searchQuery.trim() === ''
-            ? 'No chats available.'
-            : 'No chats match your search.'}
-        </Typography>
-      ) : (
-        filteredChats.map((chat) => (
-          <SidebarItem
-            key={chat.id.toString()}
-            id={chat.id}
-            title={chat.title || 'Untitled Chat'}
-            selected={chat.id === selectedChatId}
-            onEdit={handleOpenRenameDialog}
-            onDelete={handleOpenDeleteDialog}
-            onClick={selectChat}
-          />
-        ))
-      )}
+              {/* Display "No chats" message if there are no chats after filtering */}
+              {filteredChats.length === 0 ? (
+                  <Typography
+                      variant="body2"
+                      color="textSecondary"
+                      align="center"
+                      p={2}
+                  >
+                    {searchQuery.trim() === ''
+                        ? 'No chats available.'
+                        : 'No chats match your search.'}
+                  </Typography>
+              ) : (
+                  filteredChats.map((chat, index) => (
+                      <Draggable
+                          key={chat.id.toString()}
+                          draggableId={`chat-${chat.id}`}
+                          index={index}
+                      >
+                        {(provided, snapshot) => (
+                            <div
+                                ref={provided.innerRef}
+                                {...provided.draggableProps}
+                                {...provided.dragHandleProps}
+                                style={{
+                                  ...provided.draggableProps.style,
+                                  opacity: snapshot.isDragging ? 0.5 : 1,
+                                }}
+                            >
+                              <SidebarItem
+                                  id={chat.id}
+                                  title={chat.title || 'Untitled Chat'}
+                                  selected={chat.id === selectedChatId}
+                                  onEdit={handleOpenRenameDialog}
+                                  onDelete={handleOpenDeleteDialog}
+                                  onClick={selectChat}
+                              />
+                            </div>
+                        )}
+                      </Draggable>
+                  ))
+              )}
+              {provided.placeholder}
 
-      {/* Rename Dialog */}
-      <RenameChatDialog
-        open={isRenameDialogOpen}
-        onClose={handleCloseRenameDialog}
-        chatTitle={newChatTitle}
-        setChatTitle={setNewChatTitle}
-        onConfirm={handleConfirmRename}
-      />
+              {/* Rename Dialog */}
+              <RenameChatDialog
+                  open={isRenameDialogOpen}
+                  onClose={handleCloseRenameDialog}
+                  chatTitle={newChatTitle}
+                  setChatTitle={setNewChatTitle}
+                  onConfirm={handleConfirmRename}
+              />
 
-      {/* Delete Dialog */}
-      <DeleteChatDialog
-        open={isDeleteDialogOpen}
-        onClose={handleCloseDeleteDialog}
-        chatTitle={chatToDelete?.title}
-        onConfirm={handleConfirmDelete}
-      />
-    </div>
+              {/* Delete Dialog */}
+              <DeleteChatDialog
+                  open={isDeleteDialogOpen}
+                  onClose={handleCloseDeleteDialog}
+                  chatTitle={chatToDelete?.title}
+                  onConfirm={handleConfirmDelete}
+              />
+            </div>
+        )}
+      </Droppable>
   );
 };
-
-// Since SidebarItems does not receive props, PropTypes are not necessary here.
-// However, if you plan to pass props in the future, consider adding PropTypes.
 
 export default React.memo(SidebarItems);

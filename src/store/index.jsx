@@ -128,6 +128,20 @@ const useStore = create((set, get) => ({
     set((state) => ({
       folders: state.folders.filter((folder) => folder.id !== folderId),
     })),
+
+  // Unfoldered Chats (chats not in any folder)
+  unfolderedChats: [],
+
+  // Initialize unfolderedChats with all chat IDs not in folders
+  initializeUnfolderedChats: () => {
+    const chats = get().chats;
+    const folders = get().folders;
+    const folderedChatIds = folders.flatMap((folder) => folder.chatIds);
+    const unfolderedChats = chats
+        .map((chat) => chat.id)
+        .filter((id) => !folderedChatIds.includes(id));
+    set({ unfolderedChats });
+  },
 }));
 
 export default useStore;

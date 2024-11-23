@@ -17,6 +17,7 @@ import {
 } from '@mui/icons-material';
 import useStore from './store';
 import { ThemeContext } from './context/ThemeContext.jsx';
+import { DragDropContext } from '@hello-pangea/dnd';
 
 const App = () => {
   const { themeMode, setThemeMode } = useContext(ThemeContext);
@@ -32,8 +33,106 @@ const App = () => {
   const toggleSidebar = useStore((state) => state.toggleSidebar);
 
   const isFolderView = useStore((state) => state.isFolderView);
+  const onDragEnd = (result) => {
+    const { source, destination, draggableId } = result;
+
+    // If dropped outside a droppable area
+    if (!destination) return;
+
+    // If the source and destination are the same, do nothing
+    if (
+        source.droppableId === destination.droppableId &&
+        source.index === destination.index
+    ) {
+      return;
+    }
+
+    // Get the chat ID from the draggableId
+    const chatId = parseInt(draggableId.replace('chat-', ''), 10);
+
+    if (
+        source.droppableId === 'sidebar-chats' &&
+        destination.droppableId.startsWith('folder-')
+    ) {
+      // Moving from Sidebar to Folder
+      const folderId = parseInt(destination.droppableId.replace('folder-', ''), 10);
+
+      useStore.setState((state) => {
+        // Remove chat from unfolderedChats
+        const unfolderedChats = state.unfolderedChats.filter((id) => id !== chatId);
+
+        // Add chat to folder's chatIds
+        const folders = state.folders.map((folder) => {
+          if (folder.id === folderId) {
+            return {
+              ...folder,
+              chatIds: [...(folder.chatIds || []), chatId],
+            };
+          }
+          return folder;
+        });
+
+        return { unfolderedChats, folders };
+      });
+    } else if (
+        source.droppableId.startsWith('folder-') &&
+        destination.droppableId === 'sidebar-chats'
+    ) {
+      // Moving from Folder back to Sidebar
+      const sourceFolderId = parseInt(source.droppableId.replace('folder-', ''), 10);
+
+      useStore.setState((state) => {
+        // Remove chat from source folder
+        const folders = state.folders.map((folder) => {
+          if (folder.id === sourceFolderId) {
+            return {
+              ...folder,
+              chatIds: folder.chatIds.filter((id) => id !== chatId),
+            };
+          }
+          return folder;
+        });
+
+        // Add chat to unfolderedChats
+        const unfolderedChats = [...state.unfolderedChats, chatId];
+
+        return { folders, unfolderedChats };
+      });
+    } else if (
+        source.droppableId.startsWith('folder-') &&
+        destination.droppableId.startsWith('folder-')
+    ) {
+      // Moving from one folder to another
+      const sourceFolderId = parseInt(source.droppableId.replace('folder-', ''), 10);
+      const destinationFolderId = parseInt(
+          destination.droppableId.replace('folder-', ''),
+          10
+      );
+
+      useStore.setState((state) => {
+        const folders = state.folders.map((folder) => {
+          if (folder.id === sourceFolderId) {
+            return {
+              ...folder,
+              chatIds: folder.chatIds.filter((id) => id !== chatId),
+            };
+          }
+          if (folder.id === destinationFolderId) {
+            return {
+              ...folder,
+              chatIds: [...(folder.chatIds || []), chatId],
+            };
+          }
+          return folder;
+        });
+        return { folders };
+      });
+    }
+  };
+
 
   return (
+    <DragDropContext onDragEnd={onDragEnd}>
     <Box display="flex" height="100vh" width="100vw">
       {isMobile ? (
         <Drawer
@@ -100,6 +199,7 @@ const App = () => {
         {isFolderView ? <FolderDisplay /> : <ChatWindow />}
       </Box>
     </Box>
+    </DragDropContext>
   );
 };
 
