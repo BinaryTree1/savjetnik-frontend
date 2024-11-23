@@ -17,6 +17,7 @@ import {
 } from '@mui/icons-material';
 import PropTypes from 'prop-types';
 import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
+import useStore from "../../store/index.jsx";
 /**
  * FolderChatItem Component
  *
@@ -25,6 +26,16 @@ import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
  */
 const FolderChatItem = React.memo(
     ({ id, title, selected, onEdit, onDelete, onClick, level }) => {
+        const selectChat = useStore((state) => state.selectChat);
+        const setIsFolderView = useStore((state) => state.setIsFolderView);
+
+        const handleItemDoubleClick = useCallback(() => {
+            selectChat(id); // Set the selected chat ID
+            setIsFolderView(false); // Switch to ChatWindow
+
+        }, [id, selectChat, setIsFolderView]);
+
+
         const [anchorEl, setAnchorEl] = useState(null);
         const open = Boolean(anchorEl);
 
@@ -74,6 +85,7 @@ const FolderChatItem = React.memo(
         return (
             <ListItemButton
                 onClick={handleItemClick}
+                onDoubleClick={handleItemDoubleClick}
                 selected={selected}
                 sx={{
                     pl: 2 * level + 2, // Align with folder items

@@ -14,6 +14,7 @@ import {
     MoreVert as MoreVertIcon,
 } from '@mui/icons-material';
 import PropTypes from 'prop-types';
+import useStore from "../../store/index.jsx";
 
 /**
  * SidebarItem Component
@@ -84,9 +85,19 @@ const SidebarItem = React.memo(
         const buttonId = `sidebar-item-button-${id}`;
         const menuId = `sidebar-item-menu-${id}`;
 
+        const selectChat = useStore((state) => state.selectChat);
+        const setIsFolderView = useStore((state) => state.setIsFolderView);
+
+        const handleItemDoubleClick = useCallback(() => {
+            selectChat(id); // Set the selected chat ID
+            setIsFolderView(false); // Switch to ChatWindow
+
+        }, [id, selectChat, setIsFolderView]);
+
         return (
             <ListItemButton
                 onClick={handleItemClick}
+                onDoubleClick={handleItemDoubleClick}
                 selected={selected}
                 sx={{
                     paddingLeft: 2,

@@ -11,6 +11,7 @@ const useStore = create((set, get) => ({
 
     // View State
     isFolderView: false,
+    setIsFolderView: (isFolderView) => set({ isFolderView }),
     toggleFolderView: () =>
         set((state) => ({
             isFolderView: !state.isFolderView,
