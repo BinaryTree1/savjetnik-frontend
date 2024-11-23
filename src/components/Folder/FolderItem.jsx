@@ -126,7 +126,6 @@ const FolderItem = ({
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          backgroundColor: '#f5f5f5', // Optional: background color for folder header
         }}
       >
         <Box display="flex" alignItems="center">

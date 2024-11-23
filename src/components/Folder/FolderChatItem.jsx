@@ -3,6 +3,7 @@ import React, { useState, useCallback } from 'react';
 import {
   ListItemButton,
   ListItemText,
+  ListItemIcon, // Import ListItemIcon
   IconButton,
   Menu,
   MenuItem,
@@ -12,6 +13,7 @@ import {
   Edit as EditIcon,
   DeleteOutline as DeleteIcon,
   MoreVert as MoreVertIcon,
+  ChatBubbleOutline as ChatBubbleOutlineIcon, // Import ChatBubbleOutlineIcon
 } from '@mui/icons-material';
 import PropTypes from 'prop-types';
 
@@ -84,6 +86,12 @@ const FolderChatItem = React.memo(
         }}
         aria-label={`Folder chat titled ${title}`}
       >
+        {/* Message Icon */}
+        <ListItemIcon>
+          <ChatBubbleOutlineIcon color="action" />
+        </ListItemIcon>
+
+        {/* Chat Title */}
         <ListItemText
           primary={
             <Typography
@@ -99,6 +107,8 @@ const FolderChatItem = React.memo(
             </Typography>
           }
         />
+
+        {/* More Options Button */}
         <IconButton
           edge="end"
           aria-label="more options"
@@ -111,6 +121,8 @@ const FolderChatItem = React.memo(
         >
           <MoreVertIcon />
         </IconButton>
+
+        {/* More Options Menu */}
         <Menu
           id={menuId}
           anchorEl={anchorEl}
