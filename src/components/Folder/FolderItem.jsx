@@ -1,4 +1,5 @@
 // src/components/FolderItem.jsx
+
 import React, { useState, useEffect, useRef } from 'react';
 import {
   Box,
@@ -23,6 +24,12 @@ import FolderList from './FolderList.jsx';
 import MoreOptionsMenu from './MoreOptionsMenu.jsx';
 import FolderChatItem from './FolderChatItem.jsx';
 
+/**
+ * FolderItem Component
+ *
+ * Represents a single folder, which can contain chats and subfolders.
+ * Supports dragging and dropping chats into it.
+ */
 const FolderItem = ({
   folder,
   level,
@@ -30,7 +37,7 @@ const FolderItem = ({
   onAddFolder,
   visitedIds,
 }) => {
-  // Access the new action from the store
+  // Access the toggleFolderExpansion action from the store
   const toggleFolderExpansion = useStore(
     (state) => state.toggleFolderExpansion
   );
@@ -40,6 +47,7 @@ const FolderItem = ({
   const selectChat = useStore((state) => state.selectChat);
   const editChat = useStore((state) => state.editChat);
   const deleteChat = useStore((state) => state.deleteChat);
+  const updateFolder = useStore((state) => state.updateFolder);
 
   // Local state for editing folder name
   const [isEditing, setIsEditing] = useState(false);
@@ -80,6 +88,7 @@ const FolderItem = ({
       return;
     }
 
+    // Update the folder name in the store
     updateFolder({
       ...folder,
       name: trimmedName,
@@ -122,13 +131,15 @@ const FolderItem = ({
       {/* Folder Header */}
       <ListItem
         sx={{
-          pl: 2 * level, // Indentation based on level
+          pl: 2 * level, // Base indentation based on level
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
+          borderRadius: 1,
+          mb: 1,
         }}
       >
-        <Box display="flex" alignItems="center">
+        <Box display="flex" alignItems="center" sx={{ minWidth: 0 }}>
           {/* Expand/Collapse Icon */}
           <IconButton
             size="small"
@@ -139,12 +150,12 @@ const FolderItem = ({
             {folder.isExpanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
           </IconButton>
 
-          {/* Folder Icon */}
-          {folder.isExpanded ? (
-            <FolderOpenIcon sx={{ mr: 1 }} />
-          ) : (
-            <FolderIcon sx={{ mr: 1 }} />
-          )}
+          {/* Folder Icon - Aligned with chat icons */}
+          <Box
+            sx={{ width: 24, display: 'flex', justifyContent: 'center', mr: 1 }}
+          >
+            {folder.isExpanded ? <FolderOpenIcon color="action"/> : <FolderIcon />}
+          </Box>
 
           {/* Folder Name or Edit Input */}
           {isEditing ? (
@@ -166,6 +177,9 @@ const FolderItem = ({
                 cursor: 'pointer',
                 userSelect: 'none',
                 mr: 1,
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                whiteSpace: 'nowrap',
               }}
             >
               {folder.name}
@@ -185,8 +199,8 @@ const FolderItem = ({
           </Tooltip>
         </Box>
 
-        {/* More Options Button (Edit/Delete) */}
-        {folder.id !== 1 && ( // Assuming folder with id=1 is the root and cannot be edited/deleted
+        {/* More Options Button */}
+        {folder.id !== 1 && (
           <IconButton
             size="small"
             onClick={handleMenuOpen}
@@ -255,6 +269,7 @@ const FolderItem = ({
                               onEdit={editChat}
                               onDelete={deleteChat}
                               onClick={selectChat}
+                              level={level + 1} // Pass the level prop
                             />
                           </div>
                         )}

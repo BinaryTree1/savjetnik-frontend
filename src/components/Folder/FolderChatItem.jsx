@@ -1,4 +1,5 @@
 // src/components/FolderChatItem.jsx
+
 import React, { useState, useCallback } from 'react';
 import {
   ListItemButton,
@@ -13,10 +14,9 @@ import {
   Edit as EditIcon,
   DeleteOutline as DeleteIcon,
   MoreVert as MoreVertIcon,
-  ChatBubbleOutline as ChatBubbleOutlineIcon, // Import ChatBubbleOutlineIcon
 } from '@mui/icons-material';
 import PropTypes from 'prop-types';
-
+import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
 /**
  * FolderChatItem Component
  *
@@ -24,7 +24,7 @@ import PropTypes from 'prop-types';
  * It can have different styling or functionalities compared to SidebarItem.
  */
 const FolderChatItem = React.memo(
-  ({ id, title, selected, onEdit, onDelete, onClick }) => {
+  ({ id, title, selected, onEdit, onDelete, onClick, level }) => {
     const [anchorEl, setAnchorEl] = useState(null);
     const open = Boolean(anchorEl);
 
@@ -76,19 +76,25 @@ const FolderChatItem = React.memo(
         onClick={handleItemClick}
         selected={selected}
         sx={{
-          paddingLeft: 2,
-          paddingRight: 2,
+          pl: 2 * level + 2, // Align with folder items
+          pr: 2,
           bgcolor: selected ? 'action.selected' : 'inherit',
           '&:hover': {
             bgcolor: 'action.hover',
           },
-          transition: 'background-color 0.3s',
+            transition: 'background-color 0.3s',
+          // Align the chat icon with folder icons
+          '& .MuiListItemIcon-root': {
+            minWidth: 24,
+            mr: 1,
+            ml: '28px', // Width of expand/collapse button
+          },
         }}
         aria-label={`Folder chat titled ${title}`}
       >
         {/* Message Icon */}
-        <ListItemIcon>
-          <ChatBubbleOutlineIcon color="action" />
+        <ListItemIcon sx={{ minWidth: 'unset', mr: 1 }}>
+          <ChatBubbleOutlineIcon/>
         </ListItemIcon>
 
         {/* Chat Title */}
@@ -100,7 +106,6 @@ const FolderChatItem = React.memo(
                 whiteSpace: 'nowrap',
                 overflow: 'hidden',
                 textOverflow: 'ellipsis',
-                maxWidth: '85%',
               }}
             >
               {title || 'Untitled Chat'}
@@ -161,6 +166,7 @@ FolderChatItem.propTypes = {
   onEdit: PropTypes.func,
   onDelete: PropTypes.func,
   onClick: PropTypes.func,
+  level: PropTypes.number.isRequired, // Include level in propTypes
 };
 
 export default FolderChatItem;
