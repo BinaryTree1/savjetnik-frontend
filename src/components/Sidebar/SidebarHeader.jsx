@@ -2,10 +2,10 @@
 import React, { useCallback } from 'react';
 import { Box, IconButton, Typography, useTheme } from '@mui/material';
 import {
-  ChevronLeft as ChevronLeftIcon,
-  ChevronRight as ChevronRightIcon,
-  WbSunny as WbSunnyIcon,
-  NightlightRound as NightlightRoundIcon,
+    ChevronLeft as ChevronLeftIcon,
+    ChevronRight as ChevronRightIcon,
+    WbSunny as WbSunnyIcon,
+    NightlightRound as NightlightRoundIcon,
 } from '@mui/icons-material';
 import PropTypes from 'prop-types';
 import useStore from '../../store';
@@ -25,84 +25,103 @@ import useStore from '../../store';
  * @param {React.ReactNode} [props.startIcon] - Optional icon to display alongside the title.
  */
 const SidebarHeader = React.memo(
-  ({ themeMode, setThemeMode, title = 'Home Workspace', startIcon = null }) => {
-    const theme = useTheme();
-    const toggleSidebar = useStore((state) => state.toggleSidebar);
-    const isSidebarOpen = useStore((state) => state.isSidebarOpen);
+    ({
+        themeMode,
+        setThemeMode,
+        title = 'Home Workspace',
+        startIcon = null,
+    }) => {
+        const theme = useTheme();
+        const toggleSidebar = useStore((state) => state.toggleSidebar);
+        const isSidebarOpen = useStore((state) => state.isSidebarOpen);
 
-    /**
-     * Toggles the theme between light and dark modes.
-     */
-    const toggleTheme = useCallback(() => {
-      setThemeMode((prevMode) => (prevMode === 'light' ? 'dark' : 'light'));
-    }, [setThemeMode]);
+        /**
+         * Toggles the theme between light and dark modes.
+         */
+        const toggleTheme = useCallback(() => {
+            setThemeMode((prevMode) =>
+                prevMode === 'light' ? 'dark' : 'light'
+            );
+        }, [setThemeMode]);
 
-    /**
-     * Handles the sidebar toggle action.
-     */
-    const handleToggleSidebar = useCallback(() => {
-      toggleSidebar();
-    }, [toggleSidebar]);
+        /**
+         * Handles the sidebar toggle action.
+         */
+        const handleToggleSidebar = useCallback(() => {
+            toggleSidebar();
+        }, [toggleSidebar]);
 
-    return (
-      <Box
-        display="flex"
-        alignItems="center"
-        justifyContent="space-between"
-        px={2}
-        py={1}
-        bgcolor="background.paper"
-        borderBottom={`1px solid ${theme.palette.divider}`}
-      >
-        {/* Title Section */}
-        {isSidebarOpen && (
-          <Box display="flex" alignItems="center">
-            {startIcon && <Box mr={1}>{startIcon}</Box>}
-            <Typography variant="h7" noWrap color="text.primary">
-              {title}
-            </Typography>
-          </Box>
-        )}
+        return (
+            <Box
+                display="flex"
+                alignItems="center"
+                justifyContent="space-between"
+                px={2}
+                py={1}
+                bgcolor="background.paper"
+                borderBottom={`1px solid ${theme.palette.divider}`}
+            >
+                {/* Title Section */}
+                {isSidebarOpen && (
+                    <Box display="flex" alignItems="center">
+                        {startIcon && <Box mr={1}>{startIcon}</Box>}
+                        <Typography variant="h7" noWrap color="text.primary">
+                            {title}
+                        </Typography>
+                    </Box>
+                )}
 
-        {/* Action Buttons */}
-        <Box display="flex" alignItems="center">
-          {/* Toggle Theme Button */}
-          <IconButton
-            onClick={toggleTheme}
-            sx={{
-              color:
-                themeMode === 'light'
-                  ? theme.palette.text.secondary
-                  : theme.palette.common.white,
-              transition: 'color 0.3s',
-            }}
-            aria-label="Toggle Theme"
-          >
-            {themeMode === 'light' ? <NightlightRoundIcon /> : <WbSunnyIcon />}
-          </IconButton>
+                {/* Action Buttons */}
+                <Box display="flex" alignItems="center">
+                    {/* Toggle Theme Button */}
+                    <IconButton
+                        onClick={toggleTheme}
+                        sx={{
+                            color:
+                                themeMode === 'light'
+                                    ? theme.palette.text.secondary
+                                    : theme.palette.common.white,
+                            transition: 'color 0.3s',
+                        }}
+                        aria-label="Toggle Theme"
+                    >
+                        {themeMode === 'light' ? (
+                            <NightlightRoundIcon />
+                        ) : (
+                            <WbSunnyIcon />
+                        )}
+                    </IconButton>
 
-          {/* Toggle Sidebar Button */}
-          <IconButton
-            onClick={handleToggleSidebar}
-            sx={{
-              color: theme.palette.text.primary,
-              transition: 'color 0.3s',
-            }}
-            aria-label={isSidebarOpen ? 'Collapse Sidebar' : 'Expand Sidebar'}
-          >
-            {isSidebarOpen ? <ChevronLeftIcon /> : <ChevronRightIcon />}
-          </IconButton>
-        </Box>
-      </Box>
-    );
-  }
+                    {/* Toggle Sidebar Button */}
+                    <IconButton
+                        onClick={handleToggleSidebar}
+                        sx={{
+                            color: theme.palette.text.primary,
+                            transition: 'color 0.3s',
+                        }}
+                        aria-label={
+                            isSidebarOpen
+                                ? 'Collapse Sidebar'
+                                : 'Expand Sidebar'
+                        }
+                    >
+                        {isSidebarOpen ? (
+                            <ChevronLeftIcon />
+                        ) : (
+                            <ChevronRightIcon />
+                        )}
+                    </IconButton>
+                </Box>
+            </Box>
+        );
+    }
 );
 
 SidebarHeader.propTypes = {
-  themeMode: PropTypes.oneOf(['light', 'dark']).isRequired,
-  setThemeMode: PropTypes.func.isRequired,
-  title: PropTypes.string,
-  startIcon: PropTypes.node,
+    themeMode: PropTypes.oneOf(['light', 'dark']).isRequired,
+    setThemeMode: PropTypes.func.isRequired,
+    title: PropTypes.string,
+    startIcon: PropTypes.node,
 };
 
 export default SidebarHeader;

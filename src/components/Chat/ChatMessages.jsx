@@ -15,37 +15,37 @@ import EmptyChatPlaceholder from './EmptyChatPlaceholder.jsx';
  * @param {Array} props.messages - Array of message objects.
  */
 const ChatMessages = ({ messages }) => {
-  const messagesEndRef = useRef(null);
+    const messagesEndRef = useRef(null);
 
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  };
+    const scrollToBottom = () => {
+        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    };
 
-  useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
+    useEffect(() => {
+        scrollToBottom();
+    }, [messages]);
 
-  if (messages.length === 0) {
-    return <EmptyChatPlaceholder />;
-  }
+    if (messages.length === 0) {
+        return <EmptyChatPlaceholder />;
+    }
 
-  return (
-    <Box flexGrow={1} overflow="auto" p={2}>
-      {messages.map((msg, index) => (
-        <ChatMessage key={index} text={msg.text} sender={msg.sender} />
-      ))}
-      <div ref={messagesEndRef} />
-    </Box>
-  );
+    return (
+        <Box flexGrow={1} overflow="auto" p={2}>
+            {messages.map((msg, index) => (
+                <ChatMessage key={index} text={msg.text} sender={msg.sender} />
+            ))}
+            <div ref={messagesEndRef} />
+        </Box>
+    );
 };
 
 ChatMessages.propTypes = {
-  messages: PropTypes.arrayOf(
-    PropTypes.shape({
-      text: PropTypes.string.isRequired,
-      sender: PropTypes.oneOf(['user', 'bot']).isRequired,
-    })
-  ).isRequired,
+    messages: PropTypes.arrayOf(
+        PropTypes.shape({
+            text: PropTypes.string.isRequired,
+            sender: PropTypes.oneOf(['user', 'bot']).isRequired,
+        })
+    ).isRequired,
 };
 
 export default React.memo(ChatMessages);

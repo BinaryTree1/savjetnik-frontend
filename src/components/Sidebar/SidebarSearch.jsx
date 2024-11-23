@@ -11,17 +11,17 @@ import { styled, useTheme } from '@mui/material/styles';
  * A styled version of MUI's TextField to match the desired aesthetics.
  */
 const StyledTextField = styled(TextField)(({ theme }) => ({
-  borderRadius: '8px',
-  backgroundColor: theme.palette.background.paper,
-  '& .MuiOutlinedInput-root': {
     borderRadius: '8px',
-    '& fieldset': {
-      border: 'none',
+    backgroundColor: theme.palette.background.paper,
+    '& .MuiOutlinedInput-root': {
+        borderRadius: '8px',
+        '& fieldset': {
+            border: 'none',
+        },
+        '&.Mui-focused fieldset': {
+            border: 'none',
+        },
     },
-    '&.Mui-focused fieldset': {
-      border: 'none',
-    },
-  },
 }));
 
 /**
@@ -37,74 +37,76 @@ const StyledTextField = styled(TextField)(({ theme }) => ({
  * @param {React.ReactNode} [props.startIcon] - Custom start adornment icon.
  */
 const SidebarSearch = ({
-  searchQuery,
-  onSearchChange,
-  onClear,
-  placeholder = 'Search chats',
-  startIcon = <SearchIcon />,
+    searchQuery,
+    onSearchChange,
+    onClear,
+    placeholder = 'Search chats',
+    startIcon = <SearchIcon />,
 }) => {
-  const theme = useTheme();
+    const theme = useTheme();
 
-  /**
-   * Handler for input changes, directly invoking the onSearchChange prop.
-   */
-  const handleChange = (event) => {
-    onSearchChange(event);
-  };
+    /**
+     * Handler for input changes, directly invoking the onSearchChange prop.
+     */
+    const handleChange = (event) => {
+        onSearchChange(event);
+    };
 
-  /**
-   * Handler to clear the search input.
-   * Invokes the onClear prop if provided.
-   */
-  const handleClear = () => {
-    if (onClear) {
-      onClear();
-    }
-  };
+    /**
+     * Handler to clear the search input.
+     * Invokes the onClear prop if provided.
+     */
+    const handleClear = () => {
+        if (onClear) {
+            onClear();
+        }
+    };
 
-  return (
-    <Box px={2} py={1}>
-      <StyledTextField
-        variant="outlined"
-        size="small"
-        placeholder={placeholder}
-        value={searchQuery}
-        onChange={handleChange}
-        fullWidth
-        InputProps={{
-          startAdornment: (
-            <InputAdornment position="start">{startIcon}</InputAdornment>
-          ),
-          endAdornment: searchQuery && (
-            <InputAdornment position="end">
-              <IconButton
-                aria-label="Clear search"
-                onClick={handleClear}
-                edge="end"
+    return (
+        <Box px={2} py={1}>
+            <StyledTextField
+                variant="outlined"
                 size="small"
-              >
-                <ClearIcon fontSize="small" />
-              </IconButton>
-            </InputAdornment>
-          ),
-          sx: {
-            '& input': {
-              padding: '10px 12px',
-            },
-          },
-        }}
-        aria-label="Search Chats"
-      />
-    </Box>
-  );
+                placeholder={placeholder}
+                value={searchQuery}
+                onChange={handleChange}
+                fullWidth
+                InputProps={{
+                    startAdornment: (
+                        <InputAdornment position="start">
+                            {startIcon}
+                        </InputAdornment>
+                    ),
+                    endAdornment: searchQuery && (
+                        <InputAdornment position="end">
+                            <IconButton
+                                aria-label="Clear search"
+                                onClick={handleClear}
+                                edge="end"
+                                size="small"
+                            >
+                                <ClearIcon fontSize="small" />
+                            </IconButton>
+                        </InputAdornment>
+                    ),
+                    sx: {
+                        '& input': {
+                            padding: '10px 12px',
+                        },
+                    },
+                }}
+                aria-label="Search Chats"
+            />
+        </Box>
+    );
 };
 
 SidebarSearch.propTypes = {
-  searchQuery: PropTypes.string.isRequired,
-  onSearchChange: PropTypes.func.isRequired,
-  onClear: PropTypes.func,
-  placeholder: PropTypes.string,
-  startIcon: PropTypes.node,
+    searchQuery: PropTypes.string.isRequired,
+    onSearchChange: PropTypes.func.isRequired,
+    onClear: PropTypes.func,
+    placeholder: PropTypes.string,
+    startIcon: PropTypes.node,
 };
 
 export default React.memo(SidebarSearch);

@@ -15,186 +15,198 @@ import DeleteChatDialog from './DeleteChatDialog.jsx';
  * Displays a searchable list of chat items with options to rename or delete each chat.
  */
 const SidebarItems = () => {
-  const chats = useStore((state) => state.chats);
-  const unfolderedChats = useStore((state) => state.unfolderedChats);
-  const selectedChatId = useStore((state) => state.selectedChatId);
-  const editChat = useStore((state) => state.editChat);
-  const deleteChat = useStore((state) => state.deleteChat);
-  const selectChat = useStore((state) => state.selectChat);
-  const initializeUnfolderedChats = useStore(
-    (state) => state.initializeUnfolderedChats
-  );
-
-  // Initialize unfoldered chats on component mount
-  useEffect(() => {
-    initializeUnfolderedChats();
-  }, [initializeUnfolderedChats]);
-
-  // Local component states
-  const [searchQuery, setSearchQuery] = useState('');
-
-  // Dialog states
-  const [isRenameDialogOpen, setIsRenameDialogOpen] = useState(false);
-  const [chatToEdit, setChatToEdit] = useState(null);
-  const [newChatTitle, setNewChatTitle] = useState('');
-
-  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-  const [chatToDelete, setChatToDelete] = useState(null);
-
-  // Handler for search input change
-  const handleSearchChange = (e) => {
-    setSearchQuery(e.target.value);
-  };
-
-  // Debounce the search query to optimize performance
-  const debouncedSearchQuery = useDebounce(searchQuery, 300);
-
-  /**
-   * Memoize the filtered chats to prevent unnecessary computations
-   * and ensure stable references unless dependencies change.
-   */
-  const filteredChats = useMemo(() => {
-    // Get unfoldered chats
-    const chatsList = chats.filter((chat) => unfolderedChats.includes(chat.id));
-
-    // Filter chats that have at least one message
-    const activeChats = chatsList.filter((chat) => chat.messages.length > 0);
-
-    // Further filter based on the search query
-    if (!debouncedSearchQuery.trim()) {
-      return activeChats;
-    }
-
-    const lowercasedQuery = debouncedSearchQuery.toLowerCase();
-    return activeChats.filter((chat) =>
-      chat.title.toLowerCase().includes(lowercasedQuery)
+    const chats = useStore((state) => state.chats);
+    const unfolderedChats = useStore((state) => state.unfolderedChats);
+    const selectedChatId = useStore((state) => state.selectedChatId);
+    const editChat = useStore((state) => state.editChat);
+    const deleteChat = useStore((state) => state.deleteChat);
+    const selectChat = useStore((state) => state.selectChat);
+    const initializeUnfolderedChats = useStore(
+        (state) => state.initializeUnfolderedChats
     );
-  }, [chats, unfolderedChats, debouncedSearchQuery]);
 
-  // Handlers for Rename Dialog
-  const handleOpenRenameDialog = (chatId) => {
-    const chat = chats.find((c) => c.id === chatId);
-    if (chat) {
-      setChatToEdit(chat);
-      setNewChatTitle(chat.title);
-      setIsRenameDialogOpen(true);
-    }
-  };
+    // Initialize unfoldered chats on component mount
+    useEffect(() => {
+        initializeUnfolderedChats();
+    }, [initializeUnfolderedChats]);
 
-  const handleCloseRenameDialog = () => {
-    setIsRenameDialogOpen(false);
-    setChatToEdit(null);
-    setNewChatTitle('');
-  };
+    // Local component states
+    const [searchQuery, setSearchQuery] = useState('');
 
-  const handleConfirmRename = () => {
-    if (newChatTitle.trim() !== '' && chatToEdit) {
-      editChat(chatToEdit.id, newChatTitle.trim());
-      handleCloseRenameDialog();
-    }
-  };
+    // Dialog states
+    const [isRenameDialogOpen, setIsRenameDialogOpen] = useState(false);
+    const [chatToEdit, setChatToEdit] = useState(null);
+    const [newChatTitle, setNewChatTitle] = useState('');
 
-  // Handlers for Delete Dialog
-  const handleOpenDeleteDialog = (chatId) => {
-    const chat = chats.find((c) => c.id === chatId);
-    if (chat) {
-      setChatToDelete(chat);
-      setIsDeleteDialogOpen(true);
-    }
-  };
+    const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+    const [chatToDelete, setChatToDelete] = useState(null);
 
-  const handleCloseDeleteDialog = () => {
-    setIsDeleteDialogOpen(false);
-    setChatToDelete(null);
-  };
+    // Handler for search input change
+    const handleSearchChange = (e) => {
+        setSearchQuery(e.target.value);
+    };
 
-  const handleConfirmDelete = () => {
-    if (chatToDelete) {
-      deleteChat(chatToDelete.id);
-      handleCloseDeleteDialog();
-    }
-  };
+    // Debounce the search query to optimize performance
+    const debouncedSearchQuery = useDebounce(searchQuery, 300);
 
-  return (
-    <Droppable droppableId="sidebar-chats" type="CHAT">
-      {(provided, snapshot) => (
-        <div
-          ref={provided.innerRef}
-          {...provided.droppableProps}
-          style={{
-            backgroundColor: snapshot.isDraggingOver ? 'lightblue' : 'inherit',
-          }}
-        >
-          {/* Search Bar */}
-          <SidebarSearch
-            searchQuery={searchQuery}
-            onSearchChange={handleSearchChange}
-          />
+    /**
+     * Memoize the filtered chats to prevent unnecessary computations
+     * and ensure stable references unless dependencies change.
+     */
+    const filteredChats = useMemo(() => {
+        // Get unfoldered chats
+        const chatsList = chats.filter((chat) =>
+            unfolderedChats.includes(chat.id)
+        );
 
-          {/* Display "No chats" message if there are no chats after filtering */}
-          {filteredChats.length === 0 ? (
-            <Typography
-              variant="body2"
-              color="textSecondary"
-              align="center"
-              p={2}
-            >
-              {searchQuery.trim() === ''
-                ? 'No chats available.'
-                : 'No chats match your search.'}
-            </Typography>
-          ) : (
-            filteredChats.map((chat, index) => (
-              <Draggable
-                key={chat.id.toString()}
-                draggableId={`chat-${chat.id}`}
-                index={index}
-              >
-                {(provided, snapshot) => (
-                  <div
+        // Filter chats that have at least one message
+        const activeChats = chatsList.filter(
+            (chat) => chat.messages.length > 0
+        );
+
+        // Further filter based on the search query
+        if (!debouncedSearchQuery.trim()) {
+            return activeChats;
+        }
+
+        const lowercasedQuery = debouncedSearchQuery.toLowerCase();
+        return activeChats.filter((chat) =>
+            chat.title.toLowerCase().includes(lowercasedQuery)
+        );
+    }, [chats, unfolderedChats, debouncedSearchQuery]);
+
+    // Handlers for Rename Dialog
+    const handleOpenRenameDialog = (chatId) => {
+        const chat = chats.find((c) => c.id === chatId);
+        if (chat) {
+            setChatToEdit(chat);
+            setNewChatTitle(chat.title);
+            setIsRenameDialogOpen(true);
+        }
+    };
+
+    const handleCloseRenameDialog = () => {
+        setIsRenameDialogOpen(false);
+        setChatToEdit(null);
+        setNewChatTitle('');
+    };
+
+    const handleConfirmRename = () => {
+        if (newChatTitle.trim() !== '' && chatToEdit) {
+            editChat(chatToEdit.id, newChatTitle.trim());
+            handleCloseRenameDialog();
+        }
+    };
+
+    // Handlers for Delete Dialog
+    const handleOpenDeleteDialog = (chatId) => {
+        const chat = chats.find((c) => c.id === chatId);
+        if (chat) {
+            setChatToDelete(chat);
+            setIsDeleteDialogOpen(true);
+        }
+    };
+
+    const handleCloseDeleteDialog = () => {
+        setIsDeleteDialogOpen(false);
+        setChatToDelete(null);
+    };
+
+    const handleConfirmDelete = () => {
+        if (chatToDelete) {
+            deleteChat(chatToDelete.id);
+            handleCloseDeleteDialog();
+        }
+    };
+
+    return (
+        <Droppable droppableId="sidebar-chats" type="CHAT">
+            {(provided, snapshot) => (
+                <div
                     ref={provided.innerRef}
-                    {...provided.draggableProps}
-                    {...provided.dragHandleProps}
+                    {...provided.droppableProps}
                     style={{
-                      ...provided.draggableProps.style,
-                      opacity: snapshot.isDragging ? 0.5 : 1,
+                        backgroundColor: snapshot.isDraggingOver
+                            ? 'lightblue'
+                            : 'inherit',
                     }}
-                  >
-                    <SidebarItem
-                      id={chat.id}
-                      title={chat.title || 'Untitled Chat'}
-                      selected={chat.id === selectedChatId}
-                      onEdit={handleOpenRenameDialog}
-                      onDelete={handleOpenDeleteDialog}
-                      onClick={selectChat}
+                >
+                    {/* Search Bar */}
+                    <SidebarSearch
+                        searchQuery={searchQuery}
+                        onSearchChange={handleSearchChange}
                     />
-                  </div>
-                )}
-              </Draggable>
-            ))
-          )}
-          {provided.placeholder}
 
-          {/* Rename Dialog */}
-          <RenameChatDialog
-            open={isRenameDialogOpen}
-            onClose={handleCloseRenameDialog}
-            chatTitle={newChatTitle}
-            setChatTitle={setNewChatTitle}
-            onConfirm={handleConfirmRename}
-          />
+                    {/* Display "No chats" message if there are no chats after filtering */}
+                    {filteredChats.length === 0 ? (
+                        <Typography
+                            variant="body2"
+                            color="textSecondary"
+                            align="center"
+                            p={2}
+                        >
+                            {searchQuery.trim() === ''
+                                ? 'No chats available.'
+                                : 'No chats match your search.'}
+                        </Typography>
+                    ) : (
+                        filteredChats.map((chat, index) => (
+                            <Draggable
+                                key={chat.id.toString()}
+                                draggableId={`chat-${chat.id}`}
+                                index={index}
+                            >
+                                {(provided, snapshot) => (
+                                    <div
+                                        ref={provided.innerRef}
+                                        {...provided.draggableProps}
+                                        {...provided.dragHandleProps}
+                                        style={{
+                                            ...provided.draggableProps.style,
+                                            opacity: snapshot.isDragging
+                                                ? 0.5
+                                                : 1,
+                                        }}
+                                    >
+                                        <SidebarItem
+                                            id={chat.id}
+                                            title={
+                                                chat.title || 'Untitled Chat'
+                                            }
+                                            selected={
+                                                chat.id === selectedChatId
+                                            }
+                                            onEdit={handleOpenRenameDialog}
+                                            onDelete={handleOpenDeleteDialog}
+                                            onClick={selectChat}
+                                        />
+                                    </div>
+                                )}
+                            </Draggable>
+                        ))
+                    )}
+                    {provided.placeholder}
 
-          {/* Delete Dialog */}
-          <DeleteChatDialog
-            open={isDeleteDialogOpen}
-            onClose={handleCloseDeleteDialog}
-            chatTitle={chatToDelete?.title}
-            onConfirm={handleConfirmDelete}
-          />
-        </div>
-      )}
-    </Droppable>
-  );
+                    {/* Rename Dialog */}
+                    <RenameChatDialog
+                        open={isRenameDialogOpen}
+                        onClose={handleCloseRenameDialog}
+                        chatTitle={newChatTitle}
+                        setChatTitle={setNewChatTitle}
+                        onConfirm={handleConfirmRename}
+                    />
+
+                    {/* Delete Dialog */}
+                    <DeleteChatDialog
+                        open={isDeleteDialogOpen}
+                        onClose={handleCloseDeleteDialog}
+                        chatTitle={chatToDelete?.title}
+                        onConfirm={handleConfirmDelete}
+                    />
+                </div>
+            )}
+        </Droppable>
+    );
 };
 
 export default React.memo(SidebarItems);

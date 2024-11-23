@@ -10,53 +10,53 @@ import useStore from '../../store';
  * Toggles between Folder View and Chat View, displaying the corresponding icon and label.
  */
 const ViewToggleButton = () => {
-  const theme = useTheme();
+    const theme = useTheme();
 
-  // Select isFolderView, which causes re-renders when it changes
-  const isFolderView = useStore((state) => state.isFolderView);
+    // Select isFolderView, which causes re-renders when it changes
+    const isFolderView = useStore((state) => state.isFolderView);
 
-  // Get toggleView without causing re-renders (functions are stable references)
-  const toggleView = useStore(
-    (state) => state.toggleFolderView,
-    () => true
-  );
+    // Get toggleView without causing re-renders (functions are stable references)
+    const toggleView = useStore(
+        (state) => state.toggleFolderView,
+        () => true
+    );
 
-  // Constants for labels and icons
-  const LABELS = {
-    messages: 'Messages',
-    savedChats: 'Saved Chats',
-  };
+    // Constants for labels and icons
+    const LABELS = {
+        messages: 'Messages',
+        savedChats: 'Saved Chats',
+    };
 
-  const ICONS = {
-    messages: <ChatIcon />,
-    savedChats: <FolderIcon />,
-  };
+    const ICONS = {
+        messages: <ChatIcon />,
+        savedChats: <FolderIcon />,
+    };
 
-  const currentLabel = isFolderView ? LABELS.messages : LABELS.savedChats;
-  const currentIcon = isFolderView ? ICONS.messages : ICONS.savedChats;
+    const currentLabel = isFolderView ? LABELS.messages : LABELS.savedChats;
+    const currentIcon = isFolderView ? ICONS.messages : ICONS.savedChats;
 
-  return (
-    <Box px={2} mb={2}>
-      <Button
-        onClick={toggleView}
-        variant="outlined"
-        fullWidth
-        startIcon={currentIcon}
-        sx={{
-          color: 'text.primary',
-          borderColor: theme.palette.divider,
-          '&:hover': {
-            bgcolor: theme.palette.action.hover,
-          },
-          textTransform: 'none',
-          justifyContent: 'center',
-        }}
-        aria-label={`Switch to ${currentLabel} View`}
-      >
-        {currentLabel}
-      </Button>
-    </Box>
-  );
+    return (
+        <Box px={2} mb={2}>
+            <Button
+                onClick={toggleView}
+                variant="outlined"
+                fullWidth
+                startIcon={currentIcon}
+                sx={{
+                    color: 'text.primary',
+                    borderColor: theme.palette.divider,
+                    '&:hover': {
+                        bgcolor: theme.palette.action.hover,
+                    },
+                    textTransform: 'none',
+                    justifyContent: 'center',
+                }}
+                aria-label={`Switch to ${currentLabel} View`}
+            >
+                {currentLabel}
+            </Button>
+        </Box>
+    );
 };
 
 export default React.memo(ViewToggleButton);
