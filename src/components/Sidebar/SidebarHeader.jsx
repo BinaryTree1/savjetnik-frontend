@@ -26,7 +26,6 @@ import useStore from '../../store';
  */
 const SidebarHeader = React.memo(
   ({ themeMode, setThemeMode, title = 'Home Workspace', startIcon = null }) => {
-
     const theme = useTheme();
     const toggleSidebar = useStore((state) => state.toggleSidebar);
     const isSidebarOpen = useStore((state) => state.isSidebarOpen);

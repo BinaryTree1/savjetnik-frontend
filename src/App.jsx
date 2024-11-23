@@ -41,8 +41,8 @@ const App = () => {
 
     // If the source and destination are the same, do nothing
     if (
-        source.droppableId === destination.droppableId &&
-        source.index === destination.index
+      source.droppableId === destination.droppableId &&
+      source.index === destination.index
     ) {
       return;
     }
@@ -51,15 +51,20 @@ const App = () => {
     const chatId = parseInt(draggableId.replace('chat-', ''), 10);
 
     if (
-        source.droppableId === 'sidebar-chats' &&
-        destination.droppableId.startsWith('folder-')
+      source.droppableId === 'sidebar-chats' &&
+      destination.droppableId.startsWith('folder-')
     ) {
       // Moving from Sidebar to Folder
-      const folderId = parseInt(destination.droppableId.replace('folder-', ''), 10);
+      const folderId = parseInt(
+        destination.droppableId.replace('folder-', ''),
+        10
+      );
 
       useStore.setState((state) => {
         // Remove chat from unfolderedChats
-        const unfolderedChats = state.unfolderedChats.filter((id) => id !== chatId);
+        const unfolderedChats = state.unfolderedChats.filter(
+          (id) => id !== chatId
+        );
 
         // Add chat to folder's chatIds
         const folders = state.folders.map((folder) => {
@@ -75,11 +80,14 @@ const App = () => {
         return { unfolderedChats, folders };
       });
     } else if (
-        source.droppableId.startsWith('folder-') &&
-        destination.droppableId === 'sidebar-chats'
+      source.droppableId.startsWith('folder-') &&
+      destination.droppableId === 'sidebar-chats'
     ) {
       // Moving from Folder back to Sidebar
-      const sourceFolderId = parseInt(source.droppableId.replace('folder-', ''), 10);
+      const sourceFolderId = parseInt(
+        source.droppableId.replace('folder-', ''),
+        10
+      );
 
       useStore.setState((state) => {
         // Remove chat from source folder
@@ -99,14 +107,17 @@ const App = () => {
         return { folders, unfolderedChats };
       });
     } else if (
-        source.droppableId.startsWith('folder-') &&
-        destination.droppableId.startsWith('folder-')
+      source.droppableId.startsWith('folder-') &&
+      destination.droppableId.startsWith('folder-')
     ) {
       // Moving from one folder to another
-      const sourceFolderId = parseInt(source.droppableId.replace('folder-', ''), 10);
+      const sourceFolderId = parseInt(
+        source.droppableId.replace('folder-', ''),
+        10
+      );
       const destinationFolderId = parseInt(
-          destination.droppableId.replace('folder-', ''),
-          10
+        destination.droppableId.replace('folder-', ''),
+        10
       );
 
       useStore.setState((state) => {
@@ -130,75 +141,74 @@ const App = () => {
     }
   };
 
-
   return (
     <DragDropContext onDragEnd={onDragEnd}>
-    <Box display="flex" height="100vh" width="100vw">
-      {isMobile ? (
-        <Drawer
-          variant="temporary"
-          open={isSidebarOpen}
-          onClose={toggleSidebar}
-          ModalProps={{
-            keepMounted: true,
-          }}
+      <Box display="flex" height="100vh" width="100vw">
+        {isMobile ? (
+          <Drawer
+            variant="temporary"
+            open={isSidebarOpen}
+            onClose={toggleSidebar}
+            ModalProps={{
+              keepMounted: true,
+            }}
+            sx={{
+              '& .MuiDrawer-paper': {
+                width: '100%',
+                height: '100%',
+                maxWidth: '100%',
+                maxHeight: '100%',
+                boxSizing: 'border-box',
+              },
+            }}
+            PaperProps={{
+              sx: {
+                width: '100%',
+                height: '100%',
+              },
+            }}
+          >
+            <Sidebar />
+          </Drawer>
+        ) : (
+          <Sidebar />
+        )}
+
+        <Box
+          component="main"
+          flexGrow={1}
+          position="relative"
+          width={isMobile && isSidebarOpen ? 0 : '100%'}
           sx={{
-            '& .MuiDrawer-paper': {
-              width: '100%',
-              height: '100%',
-              maxWidth: '100%',
-              maxHeight: '100%',
-              boxSizing: 'border-box',
-            },
-          }}
-          PaperProps={{
-            sx: {
-              width: '100%',
-              height: '100%',
-            },
+            transition: 'width 0.3s ease-in-out',
+            overflow: 'hidden',
           }}
         >
-          <Sidebar />
-        </Drawer>
-      ) : (
-        <Sidebar />
-      )}
-
-      <Box
-        component="main"
-        flexGrow={1}
-        position="relative"
-        width={isMobile && isSidebarOpen ? 0 : '100%'}
-        sx={{
-          transition: 'width 0.3s ease-in-out',
-          overflow: 'hidden',
-        }}
-      >
-        {!isSidebarOpen && (
-          <>
-            <IconButton
-              onClick={toggleSidebar}
-              sx={{ position: 'absolute', top: 16, left: 16, zIndex: 10 }}
-              aria-label="Open Sidebar"
-            >
-              <ChevronRightIcon />
-            </IconButton>
-            <IconButton
-              onClick={toggleTheme}
-              sx={{ position: 'absolute', top: 16, right: 16, zIndex: 10 }}
-              aria-label="Toggle Theme"
-            >
-              {themeMode === 'light' ? (
-                <NightlightRoundIcon />
-              ) : (
-                <WbSunnyIcon />
-              )}
-            </IconButton>
-          </>
-        )}
-        {isFolderView ? <FolderDisplay /> : <ChatWindow />}
+          {!isSidebarOpen && (
+            <>
+              <IconButton
+                onClick={toggleSidebar}
+                sx={{ position: 'absolute', top: 16, left: 16, zIndex: 10 }}
+                aria-label="Open Sidebar"
+              >
+                <ChevronRightIcon />
+              </IconButton>
+              <IconButton
+                onClick={toggleTheme}
+                sx={{ position: 'absolute', top: 16, right: 16, zIndex: 10 }}
+                aria-label="Toggle Theme"
+              >
+                {themeMode === 'light' ? (
+                  <NightlightRoundIcon />
+                ) : (
+                  <WbSunnyIcon />
+                )}
+              </IconButton>
+            </>
+          )}
+          {isFolderView ? <FolderDisplay /> : <ChatWindow />}
+        </Box>
       </Box>
-    </Box>
     </DragDropContext>
   );
 };

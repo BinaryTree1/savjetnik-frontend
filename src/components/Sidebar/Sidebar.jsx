@@ -16,55 +16,55 @@ import useStore from '../../store';
  * @returns {JSX.Element} Sidebar component.
  */
 const Sidebar = React.memo(() => {
-    const isSidebarOpen = useStore((state) => state.isSidebarOpen);
+  const isSidebarOpen = useStore((state) => state.isSidebarOpen);
 
-    const { themeMode, setThemeMode } = useContext(ThemeContext);
+  const { themeMode, setThemeMode } = useContext(ThemeContext);
 
-    // Sidebar width configurations
-    const sidebarWidth = {
-        xs: '100%',
-        sm: '100%',
-        md: '30%',
-        lg: '20%',
-        xl: '18%',
-    };
+  // Sidebar width configurations
+  const sidebarWidth = {
+    xs: '100%',
+    sm: '100%',
+    md: '30%',
+    lg: '20%',
+    xl: '18%',
+  };
 
-    return (
-        <Paper
-            elevation={0}
-            sx={{
-                transition: 'all 0.3s ease-in-out',
-                flexShrink: 0,
-                width: isSidebarOpen ? sidebarWidth : 0,
-                overflow: 'hidden',
-                display: 'flex',
-                flexDirection: 'column',
-                height: '100vh',
-                borderRight: 1,
-                borderColor: 'divider',
-                bgcolor: 'background.sidebar',
-            }}
-        >
-            {/* Header Section */}
-            <SidebarHeader themeMode={themeMode} setThemeMode={setThemeMode} />
+  return (
+    <Paper
+      elevation={0}
+      sx={{
+        transition: 'all 0.3s ease-in-out',
+        flexShrink: 0,
+        width: isSidebarOpen ? sidebarWidth : 0,
+        overflow: 'hidden',
+        display: 'flex',
+        flexDirection: 'column',
+        height: '100vh',
+        borderRight: 1,
+        borderColor: 'divider',
+        bgcolor: 'background.sidebar',
+      }}
+    >
+      {/* Header Section */}
+      <SidebarHeader themeMode={themeMode} setThemeMode={setThemeMode} />
 
-            {/* Content Section */}
-            {isSidebarOpen && (
-                <Box flexGrow={1} display="flex" flexDirection="column" sx={{ mt: 2 }}>
-                    {/* View Toggle Button */}
-                    <ViewToggleButton />
+      {/* Content Section */}
+      {isSidebarOpen && (
+        <Box flexGrow={1} display="flex" flexDirection="column" sx={{ mt: 2 }}>
+          {/* View Toggle Button */}
+          <ViewToggleButton />
 
-                    {/* "New Chat" Button */}
-                    <NewChatButton />
+          {/* "New Chat" Button */}
+          <NewChatButton />
 
-                    <Divider sx={{ my: 0 }} />
+          <Divider sx={{ my: 0 }} />
 
-                    {/* List of Sidebar Items */}
-                    <SidebarItems />
-                </Box>
-            )}
-        </Paper>
-    );
+          {/* List of Sidebar Items */}
+          <SidebarItems />
+        </Box>
+      )}
+    </Paper>
+  );
 });
 
 export default Sidebar;

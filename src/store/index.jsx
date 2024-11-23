@@ -138,8 +138,8 @@ const useStore = create((set, get) => ({
     const folders = get().folders;
     const folderedChatIds = folders.flatMap((folder) => folder.chatIds);
     const unfolderedChats = chats
-        .map((chat) => chat.id)
-        .filter((id) => !folderedChatIds.includes(id));
+      .map((chat) => chat.id)
+      .filter((id) => !folderedChatIds.includes(id));
     set({ unfolderedChats });
   },
 }));
