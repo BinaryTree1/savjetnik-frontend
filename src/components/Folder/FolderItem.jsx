@@ -21,14 +21,8 @@ import { Droppable, Draggable } from '@hello-pangea/dnd';
 import useStore from '../../store/index.jsx';
 import FolderList from './FolderList.jsx';
 import MoreOptionsMenu from './MoreOptionsMenu.jsx';
-import FolderChatItem from './FolderChatItem.jsx'; // Import the new component
+import FolderChatItem from './FolderChatItem.jsx';
 
-/**
- * FolderItem Component
- *
- * Represents a single folder, which can contain chats and subfolders.
- * Supports dragging and dropping chats into it.
- */
 const FolderItem = ({
   folder,
   level,
@@ -36,7 +30,11 @@ const FolderItem = ({
   onAddFolder,
   visitedIds,
 }) => {
-  const updateFolder = useStore((state) => state.updateFolder);
+  // Access the new action from the store
+  const toggleFolderExpansion = useStore(
+    (state) => state.toggleFolderExpansion
+  );
+
   const chats = useStore((state) => state.chats);
   const selectedChatId = useStore((state) => state.selectedChatId);
   const selectChat = useStore((state) => state.selectChat);
@@ -58,13 +56,11 @@ const FolderItem = ({
   }, [isEditing]);
 
   /**
-   * Toggles the expanded state of the folder.
+   * Toggles the expanded state of the folder and all its descendants.
    */
   const toggleFolder = () => {
-    updateFolder({
-      ...folder,
-      isExpanded: !folder.isExpanded,
-    });
+    const newIsExpanded = !folder.isExpanded;
+    toggleFolderExpansion(folder.id, newIsExpanded);
   };
 
   /**
@@ -230,42 +226,44 @@ const FolderItem = ({
             }}
           >
             {/* Render Chats in Folder */}
-            {folder.chatIds && folder.chatIds.length > 0 && (
-              <List disablePadding>
-                {folder.chatIds.map((chatId, index) => {
-                  const chat = chats.find((c) => c.id === chatId);
-                  if (!chat) return null;
-                  return (
-                    <Draggable
-                      key={chat.id.toString()}
-                      draggableId={`chat-${chat.id}`}
-                      index={index}
-                    >
-                      {(provided, snapshot) => (
-                        <div
-                          ref={provided.innerRef}
-                          {...provided.draggableProps}
-                          {...provided.dragHandleProps}
-                          style={{
-                            ...provided.draggableProps.style,
-                            opacity: snapshot.isDragging ? 0.5 : 1,
-                          }}
-                        >
-                          <FolderChatItem
-                            id={chat.id}
-                            title={chat.title || 'Untitled Chat'}
-                            selected={chat.id === selectedChatId}
-                            onEdit={editChat}
-                            onDelete={deleteChat}
-                            onClick={selectChat}
-                          />
-                        </div>
-                      )}
-                    </Draggable>
-                  );
-                })}
-              </List>
-            )}
+            {folder.isExpanded &&
+              folder.chatIds &&
+              folder.chatIds.length > 0 && (
+                <List disablePadding>
+                  {folder.chatIds.map((chatId, index) => {
+                    const chat = chats.find((c) => c.id === chatId);
+                    if (!chat) return null;
+                    return (
+                      <Draggable
+                        key={chat.id.toString()}
+                        draggableId={`chat-${chat.id}`}
+                        index={index}
+                      >
+                        {(provided, snapshot) => (
+                          <div
+                            ref={provided.innerRef}
+                            {...provided.draggableProps}
+                            {...provided.dragHandleProps}
+                            style={{
+                              ...provided.draggableProps.style,
+                              opacity: snapshot.isDragging ? 0.5 : 1,
+                            }}
+                          >
+                            <FolderChatItem
+                              id={chat.id}
+                              title={chat.title || 'Untitled Chat'}
+                              selected={chat.id === selectedChatId}
+                              onEdit={editChat}
+                              onDelete={deleteChat}
+                              onClick={selectChat}
+                            />
+                          </div>
+                        )}
+                      </Draggable>
+                    );
+                  })}
+                </List>
+              )}
             {provided.placeholder}
           </div>
         )}

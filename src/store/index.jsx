@@ -151,6 +151,42 @@ const useStore = create((set, get) => ({
       .filter((id) => !folderedChatIds.includes(id));
     set({ unfolderedChats });
   },
+
+  // New action to recursively toggle folder expansion
+  toggleFolderExpansion: (folderId, isExpanded) => {
+    // Helper function to get all descendant folder IDs
+    const getDescendantFolderIds = (folders, parentId) => {
+      let descendantIds = [];
+      folders.forEach((folder) => {
+        if (folder.parentId === parentId) {
+          descendantIds.push(folder.id);
+          // Recursively collect descendants
+          const childDescendants = getDescendantFolderIds(folders, folder.id);
+          descendantIds = descendantIds.concat(childDescendants);
+        }
+      });
+      return descendantIds;
+    };
+
+    // Update the state immutably
+    set((state) => {
+      const foldersCopy = [...state.folders];
+
+      // Get all descendant folder IDs
+      const descendantIds = getDescendantFolderIds(foldersCopy, folderId);
+
+      // Update the `isExpanded` state for the folder and its descendants
+      const updatedFolders = foldersCopy.map((folder) => {
+        if (folder.id === folderId || descendantIds.includes(folder.id)) {
+          return { ...folder, isExpanded };
+        }
+        return folder;
+      });
+
+      // Return the new state
+      return { ...state, folders: updatedFolders };
+    });
+  },
 }));
 
 export default useStore;
