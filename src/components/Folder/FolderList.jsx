@@ -18,7 +18,7 @@ const FolderList = ({
     .sort((a, b) => a.name.localeCompare(b.name)); // Optional: Sort folders alphabetically
 
   return (
-    <List>
+    <List disablePadding>
       {filteredFolders.map((folder) => {
         // Check for cyclic references
         if (visitedIds.has(folder.id)) {

@@ -21,7 +21,7 @@ import { Droppable, Draggable } from '@hello-pangea/dnd';
 import useStore from '../../store/index.jsx';
 import FolderList from './FolderList.jsx';
 import MoreOptionsMenu from './MoreOptionsMenu.jsx';
-import SidebarItem from '../Sidebar/SidebarItem.jsx'; // Adjust the import path as needed
+import FolderChatItem from './FolderChatItem.jsx'; // Import the new component
 
 /**
  * FolderItem Component
@@ -251,7 +251,7 @@ const FolderItem = ({
                             opacity: snapshot.isDragging ? 0.5 : 1,
                           }}
                         >
-                          <SidebarItem
+                          <FolderChatItem
                             id={chat.id}
                             title={chat.title || 'Untitled Chat'}
                             selected={chat.id === selectedChatId}

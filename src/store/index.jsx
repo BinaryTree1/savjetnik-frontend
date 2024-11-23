@@ -1,4 +1,4 @@
-// src/store.js
+// src/store/index.jsx
 import { create } from 'zustand';
 
 const useStore = create((set, get) => ({
@@ -58,7 +58,14 @@ const useStore = create((set, get) => ({
         state.selectedChatId === chatId
           ? updatedChats[0]?.id || null
           : state.selectedChatId;
-      return { chats: updatedChats, selectedChatId };
+
+      // Remove chat from any folder it might be in
+      const updatedFolders = state.folders.map((folder) => ({
+        ...folder,
+        chatIds: folder.chatIds.filter((id) => id !== chatId),
+      }));
+
+      return { chats: updatedChats, selectedChatId, folders: updatedFolders };
     }),
 
   selectChat: (chatId) => set({ selectedChatId: chatId }),

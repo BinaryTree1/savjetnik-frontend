@@ -47,90 +47,60 @@ const App = () => {
       return;
     }
 
-    // Get the chat ID from the draggableId
+    // Extract chat ID from draggableId
     const chatId = parseInt(draggableId.replace('chat-', ''), 10);
 
-    if (destination.droppableId.startsWith('folder-')) {
+    // Get current state
+    const state = useStore.getState();
+    const { folders, unfolderedChats } = state;
+
+    // Initialize new state arrays
+    let newFolders = [...folders];
+    let newUnfolderedChats = [...unfolderedChats];
+
+    // Remove chat from source
+    if (source.droppableId === 'sidebar-chats') {
+      newUnfolderedChats = newUnfolderedChats.filter((id) => id !== chatId);
+    } else if (source.droppableId.startsWith('folder-')) {
+      const sourceFolderId = parseInt(
+        source.droppableId.replace('folder-', ''),
+        10
+      );
+      newFolders = newFolders.map((folder) => {
+        if (folder.id === sourceFolderId) {
+          return {
+            ...folder,
+            chatIds: folder.chatIds.filter((id) => id !== chatId),
+          };
+        }
+        return folder;
+      });
+    }
+
+    // Add chat to destination
+    if (destination.droppableId === 'sidebar-chats') {
+      newUnfolderedChats.push(chatId);
+    } else if (destination.droppableId.startsWith('folder-')) {
       const destFolderId = parseInt(
         destination.droppableId.replace('folder-', ''),
         10
       );
-
-      useStore.setState((state) => {
-        let newFolders = [...state.folders];
-        let newUnfolderedChats = [...state.unfolderedChats];
-
-        // Remove chat from source
-        if (source.droppableId === 'sidebar-chats') {
-          // Remove from unfolderedChats
-          newUnfolderedChats = newUnfolderedChats.filter((id) => id !== chatId);
-        } else if (source.droppableId.startsWith('folder-')) {
-          const sourceFolderId = parseInt(
-            source.droppableId.replace('folder-', ''),
-            10
-          );
-          newFolders = newFolders.map((folder) => {
-            if (folder.id === sourceFolderId) {
-              return {
-                ...folder,
-                chatIds: folder.chatIds.filter((id) => id !== chatId),
-              };
-            }
-            return folder;
-          });
+      newFolders = newFolders.map((folder) => {
+        if (folder.id === destFolderId) {
+          return {
+            ...folder,
+            chatIds: [...folder.chatIds, chatId],
+          };
         }
-
-        // Add chat to destination folder
-        newFolders = newFolders.map((folder) => {
-          if (folder.id === destFolderId) {
-            const updatedChatIds = [...(folder.chatIds || []), chatId];
-            return {
-              ...folder,
-              chatIds: updatedChatIds,
-            };
-          }
-          return folder;
-        });
-
-        return {
-          folders: newFolders,
-          unfolderedChats: newUnfolderedChats,
-        };
-      });
-    } else if (destination.droppableId === 'sidebar-chats') {
-      // Moving chat to unfolderedChats
-      useStore.setState((state) => {
-        let newFolders = [...state.folders];
-        let newUnfolderedChats = [...state.unfolderedChats];
-
-        // Remove from source folder
-        if (source.droppableId.startsWith('folder-')) {
-          const sourceFolderId = parseInt(
-            source.droppableId.replace('folder-', ''),
-            10
-          );
-          newFolders = newFolders.map((folder) => {
-            if (folder.id === sourceFolderId) {
-              return {
-                ...folder,
-                chatIds: folder.chatIds.filter((id) => id !== chatId),
-              };
-            }
-            return folder;
-          });
-        }
-
-        // Add to unfolderedChats
-        if (!newUnfolderedChats.includes(chatId)) {
-          newUnfolderedChats.push(chatId);
-        }
-
-        return {
-          folders: newFolders,
-          unfolderedChats: newUnfolderedChats,
-        };
+        return folder;
       });
     }
+
+    // Update state
+    useStore.setState({
+      folders: newFolders,
+      unfolderedChats: newUnfolderedChats,
+    });
   };
 
   return (
