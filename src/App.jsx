@@ -50,93 +50,85 @@ const App = () => {
     // Get the chat ID from the draggableId
     const chatId = parseInt(draggableId.replace('chat-', ''), 10);
 
-    if (
-      source.droppableId === 'sidebar-chats' &&
-      destination.droppableId.startsWith('folder-')
-    ) {
-      // Moving from Sidebar to Folder
-      const folderId = parseInt(
+    if (destination.droppableId.startsWith('folder-')) {
+      const destFolderId = parseInt(
         destination.droppableId.replace('folder-', ''),
         10
       );
 
       useStore.setState((state) => {
-        // Remove chat from unfolderedChats
-        const unfolderedChats = state.unfolderedChats.filter(
-          (id) => id !== chatId
-        );
+        let newFolders = [...state.folders];
+        let newUnfolderedChats = [...state.unfolderedChats];
 
-        // Add chat to folder's chatIds
-        const folders = state.folders.map((folder) => {
-          if (folder.id === folderId) {
+        // Remove chat from source
+        if (source.droppableId === 'sidebar-chats') {
+          // Remove from unfolderedChats
+          newUnfolderedChats = newUnfolderedChats.filter((id) => id !== chatId);
+        } else if (source.droppableId.startsWith('folder-')) {
+          const sourceFolderId = parseInt(
+            source.droppableId.replace('folder-', ''),
+            10
+          );
+          newFolders = newFolders.map((folder) => {
+            if (folder.id === sourceFolderId) {
+              return {
+                ...folder,
+                chatIds: folder.chatIds.filter((id) => id !== chatId),
+              };
+            }
+            return folder;
+          });
+        }
+
+        // Add chat to destination folder
+        newFolders = newFolders.map((folder) => {
+          if (folder.id === destFolderId) {
+            const updatedChatIds = [...(folder.chatIds || []), chatId];
             return {
               ...folder,
-              chatIds: [...(folder.chatIds || []), chatId],
+              chatIds: updatedChatIds,
             };
           }
           return folder;
         });
 
-        return { unfolderedChats, folders };
+        return {
+          folders: newFolders,
+          unfolderedChats: newUnfolderedChats,
+        };
       });
-    } else if (
-      source.droppableId.startsWith('folder-') &&
-      destination.droppableId === 'sidebar-chats'
-    ) {
-      // Moving from Folder back to Sidebar
-      const sourceFolderId = parseInt(
-        source.droppableId.replace('folder-', ''),
-        10
-      );
-
+    } else if (destination.droppableId === 'sidebar-chats') {
+      // Moving chat to unfolderedChats
       useStore.setState((state) => {
-        // Remove chat from source folder
-        const folders = state.folders.map((folder) => {
-          if (folder.id === sourceFolderId) {
-            return {
-              ...folder,
-              chatIds: folder.chatIds.filter((id) => id !== chatId),
-            };
-          }
-          return folder;
-        });
+        let newFolders = [...state.folders];
+        let newUnfolderedChats = [...state.unfolderedChats];
 
-        // Add chat to unfolderedChats
-        const unfolderedChats = [...state.unfolderedChats, chatId];
+        // Remove from source folder
+        if (source.droppableId.startsWith('folder-')) {
+          const sourceFolderId = parseInt(
+            source.droppableId.replace('folder-', ''),
+            10
+          );
+          newFolders = newFolders.map((folder) => {
+            if (folder.id === sourceFolderId) {
+              return {
+                ...folder,
+                chatIds: folder.chatIds.filter((id) => id !== chatId),
+              };
+            }
+            return folder;
+          });
+        }
 
-        return { folders, unfolderedChats };
-      });
-    } else if (
-      source.droppableId.startsWith('folder-') &&
-      destination.droppableId.startsWith('folder-')
-    ) {
-      // Moving from one folder to another
-      const sourceFolderId = parseInt(
-        source.droppableId.replace('folder-', ''),
-        10
-      );
-      const destinationFolderId = parseInt(
-        destination.droppableId.replace('folder-', ''),
-        10
-      );
+        // Add to unfolderedChats
+        if (!newUnfolderedChats.includes(chatId)) {
+          newUnfolderedChats.push(chatId);
+        }
 
-      useStore.setState((state) => {
-        const folders = state.folders.map((folder) => {
-          if (folder.id === sourceFolderId) {
-            return {
-              ...folder,
-              chatIds: folder.chatIds.filter((id) => id !== chatId),
-            };
-          }
-          if (folder.id === destinationFolderId) {
-            return {
-              ...folder,
-              chatIds: [...(folder.chatIds || []), chatId],
-            };
-          }
-          return folder;
-        });
-        return { folders };
+        return {
+          folders: newFolders,
+          unfolderedChats: newUnfolderedChats,
+        };
       });
     }
   };

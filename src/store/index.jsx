@@ -1,4 +1,4 @@
-// store.js
+// src/store.js
 import { create } from 'zustand';
 
 const useStore = create((set, get) => ({
@@ -17,30 +17,31 @@ const useStore = create((set, get) => ({
     })),
 
   // Chats State
-  chats: [{ id: 1, title: '', messages: [] }],
+  chats: [
+    {
+      id: 1,
+      title: 'Welcome Chat',
+      messages: [{ text: 'Hello!', sender: 'bot' }],
+    },
+    {
+      id: 2,
+      title: 'Project Discussion',
+      messages: [{ text: "Let's discuss the project.", sender: 'user' }],
+    },
+    // Add more initial chats as needed
+  ],
   selectedChatId: 1,
 
   addChat: () => {
     const chats = get().chats;
-    const emptyChatIndex = chats.findIndex(
-      (chat) => chat.messages.length === 0
-    );
-    if (emptyChatIndex !== -1) {
-      const emptyChat = chats[emptyChatIndex];
-      const updatedChats = [
-        emptyChat,
-        ...chats.filter((_, idx) => idx !== emptyChatIndex),
-      ];
-      set({ chats: updatedChats, selectedChatId: emptyChat.id });
-    } else {
-      const newChatId =
-        chats.length > 0 ? Math.max(...chats.map((chat) => chat.id)) + 1 : 1;
-      const newChat = { id: newChatId, title: '', messages: [] };
-      set((state) => ({
-        chats: [newChat, ...state.chats],
-        selectedChatId: newChatId,
-      }));
-    }
+    const newChatId =
+      chats.length > 0 ? Math.max(...chats.map((chat) => chat.id)) + 1 : 1;
+    const newChat = { id: newChatId, title: 'New Chat', messages: [] };
+    set((state) => ({
+      chats: [newChat, ...state.chats],
+      selectedChatId: newChatId,
+    }));
+    get().initializeUnfolderedChats();
   },
 
   editChat: (chatId, newTitle) =>
@@ -66,7 +67,7 @@ const useStore = create((set, get) => ({
     const selectedChatId = get().selectedChatId;
     if (!selectedChatId) return;
     set((state) => {
-      const chats = state.chats.map((chat) => {
+      const updatedChats = state.chats.map((chat) => {
         if (chat.id === selectedChatId) {
           const isFirstMessage = chat.messages.length === 0;
           const updatedMessages = [
@@ -80,13 +81,13 @@ const useStore = create((set, get) => ({
         }
         return chat;
       });
-      return { chats };
+      return { chats: updatedChats };
     });
 
     // Simulate bot response
     setTimeout(() => {
       set((state) => {
-        const chats = state.chats.map((chat) => {
+        const updatedChats = state.chats.map((chat) => {
           if (chat.id === selectedChatId) {
             const updatedMessages = [
               ...chat.messages,
@@ -96,7 +97,7 @@ const useStore = create((set, get) => ({
           }
           return chat;
         });
-        return { chats };
+        return { chats: updatedChats };
       });
     }, 1000);
   },
@@ -110,6 +111,7 @@ const useStore = create((set, get) => ({
       parentId: null,
       isExpanded: true,
     },
+    // Add more initial folders as needed
   ],
 
   addFolder: (newFolder) =>
@@ -136,7 +138,7 @@ const useStore = create((set, get) => ({
   initializeUnfolderedChats: () => {
     const chats = get().chats;
     const folders = get().folders;
-    const folderedChatIds = folders.flatMap((folder) => folder.chatIds);
+    const folderedChatIds = folders.flatMap((folder) => folder.chatIds || []);
     const unfolderedChats = chats
       .map((chat) => chat.id)
       .filter((id) => !folderedChatIds.includes(id));

@@ -21,8 +21,14 @@ import { Droppable, Draggable } from '@hello-pangea/dnd';
 import useStore from '../../store/index.jsx';
 import FolderList from './FolderList.jsx';
 import MoreOptionsMenu from './MoreOptionsMenu.jsx';
-import SidebarItem from '../Sidebar/SidebarItem.jsx';
+import SidebarItem from '../Sidebar/SidebarItem.jsx'; // Adjust the import path as needed
 
+/**
+ * FolderItem Component
+ *
+ * Represents a single folder, which can contain chats and subfolders.
+ * Supports dragging and dropping chats into it.
+ */
 const FolderItem = ({
   folder,
   level,
@@ -37,7 +43,7 @@ const FolderItem = ({
   const editChat = useStore((state) => state.editChat);
   const deleteChat = useStore((state) => state.deleteChat);
 
-  // Local state
+  // Local state for editing folder name
   const [isEditing, setIsEditing] = useState(false);
   const [editedName, setEditedName] = useState(folder.name);
   const [anchorEl, setAnchorEl] = useState(null);
@@ -85,25 +91,6 @@ const FolderItem = ({
     setIsEditing(false);
   };
 
-  const handleEdit = (folderId, folderName) => {
-    setIsEditing(true);
-    setEditedName(folderName);
-  };
-
-  /**
-   * Handles key presses in the edit TextField.
-   * @param {React.KeyboardEvent} e - The keyboard event.
-   */
-  const handleKeyDown = (e) => {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      saveEdit();
-    } else if (e.key === 'Escape') {
-      setIsEditing(false);
-      setEditedName(folder.name);
-    }
-  };
-
   /**
    * Opens the More Options menu.
    * @param {React.MouseEvent} event - The click event.
@@ -120,114 +107,131 @@ const FolderItem = ({
     setAnchorEl(null);
   };
 
+  /**
+   * Handles key presses in the edit TextField.
+   * @param {React.KeyboardEvent} e - The keyboard event.
+   */
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      saveEdit();
+    } else if (e.key === 'Escape') {
+      setIsEditing(false);
+      setEditedName(folder.name);
+    }
+  };
+
   return (
     <Box key={folder.id}>
-      <Droppable droppableId={`folder-${folder.id}`} type="CHAT">
-        {(provided, snapshot) => (
-          <div ref={provided.innerRef} {...provided.droppableProps}>
-            <ListItem
+      {/* Folder Header */}
+      <ListItem
+        sx={{
+          pl: 2 * level, // Indentation based on level
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          backgroundColor: '#f5f5f5', // Optional: background color for folder header
+        }}
+      >
+        <Box display="flex" alignItems="center">
+          {/* Expand/Collapse Icon */}
+          <IconButton
+            size="small"
+            onClick={toggleFolder}
+            sx={{ mr: 1 }}
+            aria-label={folder.isExpanded ? 'Collapse folder' : 'Expand folder'}
+          >
+            {folder.isExpanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+          </IconButton>
+
+          {/* Folder Icon */}
+          {folder.isExpanded ? (
+            <FolderOpenIcon sx={{ mr: 1 }} />
+          ) : (
+            <FolderIcon sx={{ mr: 1 }} />
+          )}
+
+          {/* Folder Name or Edit Input */}
+          {isEditing ? (
+            <TextField
+              value={editedName}
+              onChange={(e) => setEditedName(e.target.value)}
+              onBlur={saveEdit}
+              onKeyDown={handleKeyDown}
+              variant="standard"
+              inputRef={inputRef}
+              sx={{ mr: 1, minWidth: '150px' }}
+              aria-label="Edit Folder Name"
+            />
+          ) : (
+            <Typography
+              variant="body1"
+              onDoubleClick={handleDoubleClick}
               sx={{
-                pl: 2 * level, // Indentation based on level
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                backgroundColor: snapshot.isDraggingOver
-                  ? 'lightblue'
-                  : 'inherit',
+                cursor: 'pointer',
+                userSelect: 'none',
+                mr: 1,
               }}
             >
-              <Box display="flex" alignItems="center">
-                {/* Indentation marker for nested folders */}
-                {folder.parentId !== null && (
-                  <Typography variant="body1" sx={{ mr: 0.5 }}>
-                    |
-                  </Typography>
-                )}
+              {folder.name}
+            </Typography>
+          )}
 
-                {/* Expand/Collapse Icon */}
-                <IconButton
-                  size="small"
-                  onClick={toggleFolder}
-                  sx={{ mr: 1 }}
-                  aria-label={
-                    folder.isExpanded ? 'Collapse folder' : 'Expand folder'
-                  }
-                >
-                  {folder.isExpanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-                </IconButton>
+          {/* Add Subfolder Button */}
+          <Tooltip title="Add Subfolder">
+            <IconButton
+              size="small"
+              sx={{ ml: 1 }}
+              onClick={() => onAddFolder(folder.id)}
+              aria-label="Add subfolder"
+            >
+              <AddIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
+        </Box>
 
-                {/* Folder Icon */}
-                {folder.isExpanded ? (
-                  <FolderOpenIcon sx={{ mr: 1 }} />
-                ) : (
-                  <FolderIcon sx={{ mr: 1 }} />
-                )}
+        {/* More Options Button (Edit/Delete) */}
+        {folder.id !== 1 && ( // Assuming folder with id=1 is the root and cannot be edited/deleted
+          <IconButton
+            size="small"
+            onClick={handleMenuOpen}
+            aria-label="More options"
+          >
+            <MoreVertIcon />
+          </IconButton>
+        )}
+      </ListItem>
 
-                {/* Folder Name or Edit Input */}
-                {isEditing ? (
-                  <TextField
-                    value={editedName}
-                    onChange={(e) => setEditedName(e.target.value)}
-                    onBlur={saveEdit}
-                    onKeyDown={handleKeyDown}
-                    variant="standard"
-                    inputRef={inputRef}
-                    sx={{ mr: 1, minWidth: '150px' }}
-                    aria-label="Edit Folder Name"
-                  />
-                ) : (
-                  <Typography
-                    variant="body1"
-                    onDoubleClick={handleDoubleClick}
-                    sx={{
-                      cursor: 'pointer',
-                      userSelect: 'none',
-                      mr: 1,
-                    }}
-                  >
-                    {folder.name}
-                  </Typography>
-                )}
+      {/* More Options Menu */}
+      {anchorEl && (
+        <MoreOptionsMenu
+          anchorEl={anchorEl}
+          open={Boolean(anchorEl)}
+          onClose={handleMenuClose}
+          folder={folder}
+          onEdit={(folderId, folderName) => {
+            setIsEditing(true);
+            setEditedName(folderName);
+          }}
+        />
+      )}
 
-                {/* Add Subfolder Button */}
-                <Tooltip title="Add Subfolder">
-                  <IconButton
-                    size="small"
-                    sx={{ ml: 1 }}
-                    onClick={() => onAddFolder(folder.id)}
-                    aria-label="Add subfolder"
-                  >
-                    <AddIcon fontSize="small" />
-                  </IconButton>
-                </Tooltip>
-              </Box>
-
-              {/* More Options Button (Edit/Delete) */}
-              {folder.id !== 1 && ( // Assuming folder with id=1 is the root and cannot be edited/deleted
-                <IconButton
-                  size="small"
-                  onClick={handleMenuOpen}
-                  aria-label="More options"
-                >
-                  <MoreVertIcon />
-                </IconButton>
-              )}
-            </ListItem>
-
-            {/* More Options Menu */}
-            {anchorEl && (
-              <MoreOptionsMenu
-                anchorEl={anchorEl}
-                open={Boolean(anchorEl)}
-                onClose={handleMenuClose}
-                folder={folder}
-                onEdit={handleEdit}
-              />
-            )}
-
+      {/* Droppable Area for Chats */}
+      <Droppable droppableId={`folder-${folder.id}`} type="CHAT">
+        {(provided, snapshot) => (
+          <div
+            ref={provided.innerRef}
+            {...provided.droppableProps}
+            style={{
+              backgroundColor: snapshot.isDraggingOver ? '#e3f2fd' : 'inherit',
+              paddingLeft: 2 * (level + 1), // Indentation for chats
+              paddingTop: 4,
+              paddingBottom: 4,
+            }}
+          >
             {/* Render Chats in Folder */}
             {folder.chatIds && folder.chatIds.length > 0 && (
-              <List sx={{ pl: 2 * (level + 1) }}>
+              <List disablePadding>
                 {folder.chatIds.map((chatId, index) => {
                   const chat = chats.find((c) => c.id === chatId);
                   if (!chat) return null;
@@ -262,21 +266,21 @@ const FolderItem = ({
                 })}
               </List>
             )}
-
-            {/* Recursive Rendering of Subfolders */}
-            {folder.isExpanded && (
-              <FolderList
-                parentId={folder.id}
-                filterFolders={filterFolders}
-                onAddFolder={onAddFolder}
-                level={level + 1}
-                visitedIds={visitedIds}
-              />
-            )}
             {provided.placeholder}
           </div>
         )}
       </Droppable>
+
+      {/* Recursive Rendering of Subfolders */}
+      {folder.isExpanded && (
+        <FolderList
+          parentId={folder.id}
+          filterFolders={filterFolders}
+          onAddFolder={onAddFolder}
+          level={level + 1}
+          visitedIds={visitedIds}
+        />
+      )}
     </Box>
   );
 };
