@@ -59,7 +59,7 @@ const SidebarHeader = React.memo(
         {isSidebarOpen && (
           <Box display="flex" alignItems="center">
             {startIcon && <Box mr={1}>{startIcon}</Box>}
-            <Typography variant="h6" noWrap color="text.primary">
+            <Typography variant="h7" noWrap color="text.primary">
               {title}
             </Typography>
           </Box>
