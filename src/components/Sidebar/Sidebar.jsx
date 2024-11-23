@@ -50,14 +50,14 @@ const Sidebar = React.memo(() => {
 
             {/* Content Section */}
             {isSidebarOpen && (
-                <Box flexGrow={1} display="flex" flexDirection="column">
+                <Box flexGrow={1} display="flex" flexDirection="column" sx={{ mt: 2 }}>
                     {/* View Toggle Button */}
                     <ViewToggleButton />
 
                     {/* "New Chat" Button */}
                     <NewChatButton />
 
-                    <Divider sx={{ my: 2 }} />
+                    <Divider sx={{ my: 0 }} />
 
                     {/* List of Sidebar Items */}
                     <SidebarItems />
