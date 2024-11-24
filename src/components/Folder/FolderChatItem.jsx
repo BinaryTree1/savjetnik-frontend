@@ -17,7 +17,7 @@ import {
 } from '@mui/icons-material';
 import PropTypes from 'prop-types';
 import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
-import useStore from "../../store/index.jsx";
+import useStore from '../../store/index.jsx';
 /**
  * FolderChatItem Component
  *
@@ -32,9 +32,7 @@ const FolderChatItem = React.memo(
         const handleItemDoubleClick = useCallback(() => {
             selectChat(id); // Set the selected chat ID
             setIsFolderView(false); // Switch to ChatWindow
-
         }, [id, selectChat, setIsFolderView]);
-
 
         const [anchorEl, setAnchorEl] = useState(null);
         const open = Boolean(anchorEl);

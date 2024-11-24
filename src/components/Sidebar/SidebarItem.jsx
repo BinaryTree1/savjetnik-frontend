@@ -14,7 +14,7 @@ import {
     MoreVert as MoreVertIcon,
 } from '@mui/icons-material';
 import PropTypes from 'prop-types';
-import useStore from "../../store/index.jsx";
+import useStore from '../../store/index.jsx';
 
 /**
  * SidebarItem Component
@@ -91,7 +91,6 @@ const SidebarItem = React.memo(
         const handleItemDoubleClick = useCallback(() => {
             selectChat(id); // Set the selected chat ID
             setIsFolderView(false); // Switch to ChatWindow
-
         }, [id, selectChat, setIsFolderView]);
 
         return (
