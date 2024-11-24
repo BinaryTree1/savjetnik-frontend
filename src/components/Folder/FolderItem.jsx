@@ -269,8 +269,8 @@ const FolderItem = ({
                                         if (!chat) return null;
                                         return (
                                             <Draggable
-                                                key={chat.id.toString()}
-                                                draggableId={`chat-${chat.id}`}
+                                                key={`folder-chat-${chat.id.toString()}`}
+                                                draggableId={`folder-chat-${chat.id}`}
                                                 index={index}
                                             >
                                                 {(provided, snapshot) => (

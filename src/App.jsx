@@ -23,6 +23,17 @@ const App = () => {
     const { themeMode, setThemeMode } = useContext(ThemeContext);
     const theme = useTheme();
 
+    const addChatToFolder = useStore((state) => state.addChatToFolder);
+    const removeChatFromFolders = useStore(
+        (state) => state.removeChatFromFolders
+    );
+    const initializeUnfolderedChats = useStore(
+        (state) => state.initializeUnfolderedChats
+    );
+    const removeChatFromFolder = useStore(
+        (state) => state.removeChatFromFolder
+    );
+
     const toggleTheme = () => {
         setThemeMode(themeMode === 'light' ? 'dark' : 'light');
     };
@@ -33,76 +44,63 @@ const App = () => {
     const toggleSidebar = useStore((state) => state.toggleSidebar);
 
     const isFolderView = useStore((state) => state.isFolderView);
-    const onDragEnd = (result) => {
-        const { source, destination, draggableId } = result;
 
-        // If dropped outside a droppable area
+    const onDragEnd = (result) => {
+        const { destination, source, draggableId } = result;
+
         if (!destination) return;
 
-        // If the source and destination are the same, do nothing
         if (
-            source.droppableId === destination.droppableId &&
-            source.index === destination.index
+            destination.droppableId === source.droppableId &&
+            destination.index === source.index
         ) {
             return;
         }
 
-        // Extract chat ID from draggableId
-        const chatId = parseInt(draggableId.replace('chat-', ''), 10);
+        // Parse the draggableId to get the context and chatId
+        const [sourceContext, , chatIdStr] = draggableId.split('-');
+        const chatId = parseInt(chatIdStr, 10);
 
-        // Get current state
-        const state = useStore.getState();
-        const { folders, unfolderedChats } = state;
-
-        // Initialize new state arrays
-        let newFolders = [...folders];
-        let newUnfolderedChats = [...unfolderedChats];
-
-        // Remove chat from source
-        if (source.droppableId === 'sidebar-chats') {
-            newUnfolderedChats = newUnfolderedChats.filter(
-                (id) => id !== chatId
+        // Handle dragging from folder to sidebar (remove from folder)
+        if (
+            source.droppableId.startsWith('folder-') &&
+            destination.droppableId === 'sidebar-chats'
+        ) {
+            removeChatFromFolders(chatId);
+        }
+        // Handle dragging from sidebar to folder (add to folder)
+        else if (
+            source.droppableId === 'sidebar-chats' &&
+            destination.droppableId.startsWith('folder-')
+        ) {
+            const folderId = parseInt(
+                destination.droppableId.replace('folder-', ''),
+                10
             );
-        } else if (source.droppableId.startsWith('folder-')) {
+            addChatToFolder(chatId, folderId);
+        }
+        // Handle moving between folders
+        else if (
+            source.droppableId.startsWith('folder-') &&
+            destination.droppableId.startsWith('folder-')
+        ) {
             const sourceFolderId = parseInt(
                 source.droppableId.replace('folder-', ''),
                 10
             );
-            newFolders = newFolders.map((folder) => {
-                if (folder.id === sourceFolderId) {
-                    return {
-                        ...folder,
-                        chatIds: folder.chatIds.filter((id) => id !== chatId),
-                    };
-                }
-                return folder;
-            });
-        }
-
-        // Add chat to destination
-        if (destination.droppableId === 'sidebar-chats') {
-            newUnfolderedChats.push(chatId);
-        } else if (destination.droppableId.startsWith('folder-')) {
-            const destFolderId = parseInt(
+            const destinationFolderId = parseInt(
                 destination.droppableId.replace('folder-', ''),
                 10
             );
-            newFolders = newFolders.map((folder) => {
-                if (folder.id === destFolderId) {
-                    return {
-                        ...folder,
-                        chatIds: [...folder.chatIds, chatId],
-                    };
-                }
-                return folder;
-            });
+
+            if (sourceFolderId !== destinationFolderId) {
+                removeChatFromFolder(chatId, sourceFolderId);
+                addChatToFolder(chatId, destinationFolderId);
+            }
         }
 
-        // Update state
-        useStore.setState({
-            folders: newFolders,
-            unfolderedChats: newUnfolderedChats,
-        });
+        // Re-initialize unfolderedChats to update the sidebar list
+        initializeUnfolderedChats();
     };
 
     return (

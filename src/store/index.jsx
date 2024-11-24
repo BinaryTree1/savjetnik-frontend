@@ -154,19 +154,6 @@ const useStore = create((set, get) => ({
     // Unfoldered Chats (chats not in any folder)
     unfolderedChats: [],
 
-    // Initialize unfolderedChats with all chat IDs not in folders
-    initializeUnfolderedChats: () => {
-        const chats = get().chats;
-        const folders = get().folders;
-        const folderedChatIds = folders.flatMap(
-            (folder) => folder.chatIds || []
-        );
-        const unfolderedChats = chats
-            .map((chat) => chat.id)
-            .filter((id) => !folderedChatIds.includes(id));
-        set({ unfolderedChats });
-    },
-
     // New action to recursively toggle folder expansion
     toggleFolderExpansion: (folderId, isExpanded) => {
         // Helper function to get all descendant folder IDs
@@ -206,6 +193,71 @@ const useStore = create((set, get) => ({
 
             // Return the new state
             return { ...state, folders: updatedFolders };
+        });
+    },
+
+    addChatToFolder: (chatId, folderId) => {
+        set((state) => {
+            const folders = state.folders.map((folder) => {
+                if (folder.id === folderId) {
+                    // Ensure chat isn't already in the folder
+                    if (!folder.chatIds.includes(chatId)) {
+                        return {
+                            ...folder,
+                            chatIds: [...folder.chatIds, chatId],
+                            isExpanded: true, // Expand folder to show the new chat
+                        };
+                    }
+                } else {
+                    // Remove chat from other folders if necessary
+                    return {
+                        ...folder,
+                        chatIds: folder.chatIds.filter((id) => id !== chatId),
+                    };
+                }
+                return folder;
+            });
+            return { folders };
+        });
+        get().initializeUnfolderedChats(); // Update unfoldered chats
+    },
+
+    // Action to remove a chat from all folders
+    removeChatFromFolders: (chatId) => {
+        set((state) => {
+            const folders = state.folders.map((folder) => ({
+                ...folder,
+                chatIds: folder.chatIds.filter((id) => id !== chatId),
+            }));
+            return { folders };
+        });
+    },
+
+    // Initialize unfolderedChats with all chats (since chats remain in the sidebar)
+    initializeUnfolderedChats: () => {
+        const chats = get().chats;
+        const folders = get().folders;
+        const folderedChatIds = folders.flatMap(
+            (folder) => folder.chatIds || []
+        );
+        const unfolderedChats = chats
+            .map((chat) => chat.id)
+            .filter((id) => !folderedChatIds.includes(id));
+        set({ unfolderedChats });
+    },
+
+    removeChatFromFolder: (chatId, folderId) => {
+        set((state) => {
+            const folders = state.folders.map((folder) => {
+                if (folder.id === folderId) {
+                    return {
+                        ...folder,
+                        chatIds: folder.chatIds.filter((id) => id !== chatId),
+                    };
+                }
+                return folder;
+            });
+            return { folders };
         });
     },
 }));

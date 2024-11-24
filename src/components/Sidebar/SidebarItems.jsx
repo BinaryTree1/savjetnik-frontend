@@ -17,6 +17,7 @@ import DeleteChatDialog from './DeleteChatDialog.jsx';
 const SidebarItems = () => {
     const chats = useStore((state) => state.chats);
     const unfolderedChats = useStore((state) => state.unfolderedChats);
+    const folders = useStore((state) => state.folders);
     const selectedChatId = useStore((state) => state.selectedChatId);
     const editChat = useStore((state) => state.editChat);
     const deleteChat = useStore((state) => state.deleteChat);
@@ -54,10 +55,8 @@ const SidebarItems = () => {
      * and ensure stable references unless dependencies change.
      */
     const filteredChats = useMemo(() => {
-        // Get unfoldered chats
-        const chatsList = chats.filter((chat) =>
-            unfolderedChats.includes(chat.id)
-        );
+        // Get all chats (since chats remain in the sidebar regardless of folder status)
+        const chatsList = chats;
 
         // Filter chats that have at least one message
         const activeChats = chatsList.filter(
@@ -73,7 +72,12 @@ const SidebarItems = () => {
         return activeChats.filter((chat) =>
             chat.title.toLowerCase().includes(lowercasedQuery)
         );
-    }, [chats, unfolderedChats, debouncedSearchQuery]);
+    }, [chats, debouncedSearchQuery]);
+
+    // Function to check if a chat is in any folder
+    const isChatInFolder = (chatId) => {
+        return folders.some((folder) => folder.chatIds.includes(chatId));
+    };
 
     // Handlers for Rename Dialog
     const handleOpenRenameDialog = (chatId) => {
@@ -129,6 +133,10 @@ const SidebarItems = () => {
                         backgroundColor: snapshot.isDraggingOver
                             ? 'lightblue'
                             : 'inherit',
+                        width: 300, // Adjust the width as needed
+                        overflowY: 'auto',
+                        borderRight: '1px solid #e0e0e0',
+                        padding: 16,
                     }}
                 >
                     {/* Search Bar */}
@@ -152,8 +160,8 @@ const SidebarItems = () => {
                     ) : (
                         filteredChats.map((chat, index) => (
                             <Draggable
-                                key={chat.id.toString()}
-                                draggableId={`chat-${chat.id}`}
+                                key={`sidebar-chat-${chat.id.toString()}`}
+                                draggableId={`sidebar-chat-${chat.id}`}
                                 index={index}
                             >
                                 {(provided, snapshot) => (
@@ -166,6 +174,7 @@ const SidebarItems = () => {
                                             opacity: snapshot.isDragging
                                                 ? 0.5
                                                 : 1,
+                                            marginBottom: 8,
                                         }}
                                     >
                                         <SidebarItem
@@ -179,6 +188,7 @@ const SidebarItems = () => {
                                             onEdit={handleOpenRenameDialog}
                                             onDelete={handleOpenDeleteDialog}
                                             onClick={selectChat}
+                                            isInFolder={isChatInFolder(chat.id)}
                                         />
                                     </div>
                                 )}
