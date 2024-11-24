@@ -30,7 +30,7 @@ const ChatMessages = ({ messages }) => {
     }
 
     return (
-        <Box flexGrow={1} overflow="auto" p={2}>
+        <Box flexGrow={1} overflow="auto">
             {messages.map((msg, index) => (
                 <ChatMessage key={index} text={msg.text} sender={msg.sender} />
             ))}
