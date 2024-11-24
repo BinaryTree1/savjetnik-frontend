@@ -133,9 +133,7 @@ const SidebarItems = () => {
                         backgroundColor: snapshot.isDraggingOver
                             ? 'lightblue'
                             : 'inherit',
-                        width: 300, // Adjust the width as needed
                         overflowY: 'auto',
-                        borderRight: '1px solid #e0e0e0',
                         padding: 16,
                     }}
                 >

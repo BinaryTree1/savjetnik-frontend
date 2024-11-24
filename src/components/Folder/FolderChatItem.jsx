@@ -86,7 +86,7 @@ const FolderChatItem = React.memo(
                 onDoubleClick={handleItemDoubleClick}
                 selected={selected}
                 sx={{
-                    pl: 2 * level + 2, // Align with folder items
+                    pl: 2 * level + 1.5, // Align with folder items
                     pr: 2,
                     bgcolor: selected ? 'action.selected' : 'inherit',
                     '&:hover': {
