@@ -28,6 +28,8 @@ const FolderDisplay = () => {
     const folders = useStore((state) => state.folders);
     const addFolder = useStore((state) => state.addFolder);
 
+    const isSidebarOpen = useStore((state) => state.isSidebarOpen); // Sidebar state
+
     // Local component state
     const [openAddDialog, setOpenAddDialog] = useState(false); // Controls the Add Folder dialog
     const [selectedParentFolder, setSelectedParentFolder] = useState(null); // Parent folder ID for adding subfolders
@@ -101,9 +103,9 @@ const FolderDisplay = () => {
                 flexDirection: 'column',
                 height: '100vh',
             }}
+            pl={!isSidebarOpen ? 8 : 2}
         >
             {/* Header Section */}
-
             <Box p={2}>
                 <Typography variant="h6" m={1}>
                     Folders
@@ -119,7 +121,7 @@ const FolderDisplay = () => {
                     display: 'flex',
                     justifyContent: 'left',
                     p: 3,
-                    pl: 5,
+                    pl: 2,
                 }}
             >
                 <Stack

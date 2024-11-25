@@ -20,6 +20,8 @@ const ChatWindow = () => {
     const messages = selectedChat?.messages || [];
     const chatName = selectedChat?.title || 'Chat';
 
+    const isSidebarOpen = useStore((state) => state.isSidebarOpen);
+
     const handleSendMessage = () => {
         if (message.trim() !== '') {
             sendMessage(message.trim());
@@ -35,7 +37,10 @@ const ChatWindow = () => {
             bgcolor="background.default"
         >
             {/* Chat Name Header */}
-            <Box p={2}>
+            <Box
+                p={2}
+                pl={!isSidebarOpen ? 8 : 2} // Adjust padding-left based on sidebar state
+            >
                 <Typography variant="h6" m={1}>
                     {chatName}
                 </Typography>
