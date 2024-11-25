@@ -1,7 +1,6 @@
 // src/components/Sidebar/Sidebar.jsx
 import React, { useContext } from 'react';
 import { Box, IconButton, Tooltip } from '@mui/material';
-
 import {
     MessageSquare as MessageIcon,
     Folder as FolderIcon,
@@ -29,12 +28,12 @@ const Sidebar = React.memo(() => {
             sx={{
                 width: isSidebarOpen
                     ? {
-                          xs: '100%',
-                          sm: '100%',
-                          md: '30%',
-                          lg: '25%',
-                          xl: '25%',
-                      }
+                        xs: '100%',
+                        sm: '100%',
+                        md: '30%',
+                        lg: '25%',
+                        xl: '25%',
+                    }
                     : '0px', // Collapsed width
                 display: 'flex',
                 flexDirection: 'row',
@@ -88,11 +87,17 @@ const Sidebar = React.memo(() => {
                     >
                         {isSidebarOpen ? (
                             <ChevronLeftIcon
-                                sx={{ color: 'text.secondary', fontSize: 24 }}
+                                style={{
+                                    color: 'text.secondary',
+                                    fontSize: 24,
+                                }}
                             />
                         ) : (
                             <ChevronRightIcon
-                                sx={{ color: 'text.secondary', fontSize: 24 }}
+                                style={{
+                                    color: 'text.secondary',
+                                    fontSize: 24,
+                                }}
                             />
                         )}
                     </IconButton>
@@ -109,6 +114,9 @@ const Sidebar = React.memo(() => {
                                 width: '40px',
                                 height: '40px',
                                 mb: 1,
+                                color: !isFolderView
+                                    ? 'primary.main'
+                                    : 'text.secondary',
                                 '&:hover': {
                                     backgroundColor: isDarkMode
                                         ? '#374151'
@@ -117,9 +125,7 @@ const Sidebar = React.memo(() => {
                             }}
                             aria-label="Chat View"
                         >
-                            <MessageIcon
-                                sx={{ color: 'text.secondary', fontSize: 24 }}
-                            />
+                            <MessageIcon style={{ fontSize: 24 }} />
                         </IconButton>
                     </Tooltip>
                 )}
@@ -135,6 +141,9 @@ const Sidebar = React.memo(() => {
                                 width: '40px',
                                 height: '40px',
                                 mb: 1,
+                                color: isFolderView
+                                    ? 'primary.main'
+                                    : 'text.secondary',
                                 '&:hover': {
                                     backgroundColor: isDarkMode
                                         ? '#374151'
@@ -143,9 +152,7 @@ const Sidebar = React.memo(() => {
                             }}
                             aria-label="Saved Chats (Folder View)"
                         >
-                            <FolderIcon
-                                sx={{ color: 'text.secondary', fontSize: 24 }}
-                            />
+                            <FolderIcon style={{ fontSize: 24 }} />
                         </IconButton>
                     </Tooltip>
                 )}
@@ -170,14 +177,14 @@ const Sidebar = React.memo(() => {
                         >
                             {isDarkMode ? (
                                 <SunIcon
-                                    sx={{
+                                    style={{
                                         color: 'text.secondary',
                                         fontSize: 24,
                                     }}
                                 />
                             ) : (
                                 <MoonIcon
-                                    sx={{
+                                    style={{
                                         color: 'text.secondary',
                                         fontSize: 24,
                                     }}
