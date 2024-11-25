@@ -27,7 +27,7 @@ const useStore = create((set, get) => ({
         {
             id: 2,
             title: 'Project Discussion',
-            messages: [{ text: "Let's discuss the project.", sender: 'user' }],
+            messages: [{ text: "Let's discuss the project.", sender: 'bot' }],
         },
         // Add more initial chats as needed
     ],

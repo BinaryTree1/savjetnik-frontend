@@ -1,6 +1,6 @@
 // src/components/Sidebar/SidebarItems.jsx
 import React, { useState, useMemo, useEffect } from 'react';
-import { Typography } from '@mui/material';
+import {Divider, Typography} from '@mui/material';
 import { Droppable, Draggable } from '@hello-pangea/dnd';
 import useDebounce from '../../hooks/useDebounce.jsx';
 import useStore from '../../store';

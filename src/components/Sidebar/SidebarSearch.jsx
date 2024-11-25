@@ -9,10 +9,9 @@ import { styled, useTheme } from '@mui/material/styles';
  * StyledTextField
  *
  * A styled version of MUI's TextField to match the desired aesthetics.
+ * Removed background color to make it transparent.
  */
 const StyledTextField = styled(TextField)(({ theme }) => ({
-    borderRadius: '8px',
-    backgroundColor: theme.palette.background.paper,
     '& .MuiOutlinedInput-root': {
         borderRadius: '8px',
         '& fieldset': {
@@ -21,6 +20,9 @@ const StyledTextField = styled(TextField)(({ theme }) => ({
         '&.Mui-focused fieldset': {
             border: 'none',
         },
+    },
+    '& input': {
+        padding: '12px 16px', // Increased input padding
     },
 }));
 
@@ -37,12 +39,12 @@ const StyledTextField = styled(TextField)(({ theme }) => ({
  * @param {React.ReactNode} [props.startIcon] - Custom start adornment icon.
  */
 const SidebarSearch = ({
-    searchQuery,
-    onSearchChange,
-    onClear,
-    placeholder = 'Search chats',
-    startIcon = <SearchIcon />,
-}) => {
+                           searchQuery,
+                           onSearchChange,
+                           onClear,
+                           placeholder = 'Search chats',
+                           startIcon = <SearchIcon />,
+                       }) => {
     const theme = useTheme();
 
     /**
@@ -63,7 +65,16 @@ const SidebarSearch = ({
     };
 
     return (
-        <Box px={2} py={1}>
+        <Box
+            mb={2} // Increased bottom margin for spacing
+            sx={{
+                backgroundColor:
+                    theme.palette.mode === 'light'
+                        ? theme.palette.grey[100] // Slightly visible background in light mode
+                        : theme.palette.background.paper,
+                borderRadius: '8px', // Match the TextField border radius
+            }}
+        >
             <StyledTextField
                 variant="outlined"
                 size="small"
@@ -90,9 +101,7 @@ const SidebarSearch = ({
                         </InputAdornment>
                     ),
                     sx: {
-                        '& input': {
-                            padding: '10px 12px',
-                        },
+                        backgroundColor: 'transparent', // Ensure the TextField is transparent
                     },
                 }}
                 aria-label="Search Chats"
