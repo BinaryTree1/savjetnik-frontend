@@ -1,74 +1,169 @@
+// src/components/Sidebar/Sidebar.jsx
 import React, { useContext } from 'react';
-import { Divider, Paper, Box } from '@mui/material';
-import SidebarHeader from './SidebarHeader.jsx';
-import ViewToggleButton from './ViewToggleButton.jsx';
-import NewChatButton from './NewChatButton.jsx';
-import SidebarItems from './SidebarItems.jsx';
+import { Box, IconButton, Tooltip } from '@mui/material';
+
+import {
+    MessageSquare as MessageIcon,
+    Folder as FolderIcon,
+    Sun as SunIcon,
+    ChevronLeft as ChevronLeftIcon,
+    ChevronRight as ChevronRightIcon,
+    Moon as MoonIcon,
+} from "lucide-react";
 import { ThemeContext } from '../../context/ThemeContext.jsx';
 import useStore from '../../store';
+import SidebarItems from './SidebarItems.jsx';
 
-/**
- * Sidebar Component
- *
- * Renders a collapsible sidebar with a header, toggle button,
- * "New Chat" button, and a list of sidebar items.
- *
- * @returns {JSX.Element} Sidebar component.
- */
 const Sidebar = React.memo(() => {
+    const { themeMode, setThemeMode } = useContext(ThemeContext);
+    const isDarkMode = themeMode === 'dark';
+
+    const toggleFolderView = useStore((state) => state.toggleFolderView);
+    const isFolderView = useStore((state) => state.isFolderView);
+
+    const toggleSidebar = useStore((state) => state.toggleSidebar);
     const isSidebarOpen = useStore((state) => state.isSidebarOpen);
 
-    const { themeMode, setThemeMode } = useContext(ThemeContext);
-
-    // Sidebar width configurations
-    const sidebarWidth = {
-        xs: '100%',
-        sm: '100%',
-        md: '30%',
-        lg: '20%',
-        xl: '18%',
-    };
-
     return (
-        <Paper
-            elevation={0}
+        <Box
             sx={{
-                transition: 'all 0.3s ease-in-out',
-                flexShrink: 0,
-                width: isSidebarOpen ? sidebarWidth : 0,
-                overflow: 'hidden',
+                width: isSidebarOpen ? {
+                    xs: '100%',
+                    sm: '100%',
+                    md: '30%',
+                    lg: '25%',
+                    xl: '25%',
+                } : '0px', // Collapsed width
                 display: 'flex',
-                flexDirection: 'column',
-                height: '100vh',
-                borderRight: 1,
+                flexDirection: 'row',
+                borderRight: isSidebarOpen ? '1px solid' : 'none',
                 borderColor: 'divider',
-                bgcolor: 'background.sidebar',
+                backgroundColor: isSidebarOpen ? 'background.sidebar' : 'transparent',
+                height: '100vh',
+                overflow: 'hidden',
+                transition: 'width 0.3s ease',
             }}
         >
-            {/* Header Section */}
-            <SidebarHeader themeMode={themeMode} setThemeMode={setThemeMode} />
+            {/* Left Section: Icon Buttons */}
+            <Box
+                sx={{
+                    width: '64px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    py: 2,
+                    borderRight: '1px solid',
+                    borderColor: 'divider',
+                    backgroundColor: 'background.paper',
+                }}
+            >
+                {/* Toggle Button */}
+                <Tooltip title={isSidebarOpen ? "Collapse Sidebar" : "Expand Sidebar"} placement="right">
+                    <IconButton
+                        onClick={toggleSidebar}
+                        sx={{
+                            width: '40px',
+                            height: '40px',
+                            mb: 2,
+                            '&:hover': {
+                                backgroundColor: isDarkMode ? '#374151' : '#F3F4F6',
+                            },
+                        }}
+                        aria-label={isSidebarOpen ? "Collapse Sidebar" : "Expand Sidebar"}
+                    >
+                        {isSidebarOpen ? (
+                            <ChevronLeftIcon sx={{ color: 'text.secondary', fontSize: 24 }} />
+                        ) : (
+                            <ChevronRightIcon sx={{ color: 'text.secondary', fontSize: 24 }} />
+                        )}
+                    </IconButton>
+                </Tooltip>
 
-            {/* Content Section */}
+                {/* Chat View Button */}
+                {isSidebarOpen && (
+                    <Tooltip title="Chat View" placement="right">
+                        <IconButton
+                            onClick={() => {
+                                if (isFolderView) toggleFolderView();
+                            }}
+                            sx={{
+                                width: '40px',
+                                height: '40px',
+                                mb: 1,
+                                '&:hover': {
+                                    backgroundColor: isDarkMode ? '#374151' : '#F3F4F6',
+                                },
+                            }}
+                            aria-label="Chat View"
+                        >
+                            <MessageIcon sx={{ color: 'text.secondary', fontSize: 24 }} />
+                        </IconButton>
+                    </Tooltip>
+                )}
+
+                {/* Saved Chats (Folder) View Button */}
+                {isSidebarOpen && (
+                    <Tooltip title="Saved Chats" placement="right">
+                        <IconButton
+                            onClick={() => {
+                                if (!isFolderView) toggleFolderView();
+                            }}
+                            sx={{
+                                width: '40px',
+                                height: '40px',
+                                mb: 1,
+                                '&:hover': {
+                                    backgroundColor: isDarkMode ? '#374151' : '#F3F4F6',
+                                },
+                            }}
+                            aria-label="Saved Chats (Folder View)"
+                        >
+                            <FolderIcon sx={{ color: 'text.secondary', fontSize: 24 }} />
+                        </IconButton>
+                    </Tooltip>
+                )}
+
+                {/* Toggle Dark Mode Button */}
+                {isSidebarOpen && (
+                    <Tooltip title="Toggle Dark Mode" placement="right">
+                        <IconButton
+                            onClick={() => setThemeMode(isDarkMode ? 'light' : 'dark')}
+                            sx={{
+                                width: '40px',
+                                height: '40px',
+                                '&:hover': {
+                                    backgroundColor: isDarkMode ? '#374151' : '#F3F4F6',
+                                },
+                            }}
+                            aria-label="Toggle dark mode"
+                        >
+                            {isDarkMode ? (
+                                <SunIcon sx={{ color: 'text.secondary', fontSize: 24 }} />
+                            ) : (
+                                <MoonIcon sx={{ color: 'text.secondary', fontSize: 24 }} />
+                            )}
+                        </IconButton>
+                    </Tooltip>
+                )}
+            </Box>
+
+            {/* Right Section: Search Bar and Chat List */}
             {isSidebarOpen && (
                 <Box
-                    flexGrow={1}
-                    display="flex"
-                    flexDirection="column"
-                    sx={{ mt: 2 }}
+                    sx={{
+                        flexGrow: 1,
+                        display: 'flex',
+                        flexDirection: 'column',
+                        overflowY: 'auto',
+                        backgroundColor: 'background.sidebar',
+                        transition: 'opacity 0.3s ease',
+                    }}
                 >
-                    {/* View Toggle Button */}
-                    <ViewToggleButton />
-
-                    {/* "New Chat" Button */}
-                    <NewChatButton />
-
-                    <Divider sx={{ my: 0 }} />
-
-                    {/* List of Sidebar Items */}
+                    {/* Sidebar Items */}
                     <SidebarItems />
                 </Box>
             )}
-        </Paper>
+        </Box>
     );
 });
 
