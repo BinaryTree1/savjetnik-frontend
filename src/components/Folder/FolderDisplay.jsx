@@ -14,7 +14,7 @@ import {
     CreateNewFolder as CreateNewFolderIcon,
     Search as SearchIcon,
 } from '@mui/icons-material';
-import useStore from '../../store/index.jsx';
+import useStore from '../../store/MainStore.jsx';
 import FolderList from './FolderList.jsx';
 import AddFolderDialog from './AddFolderDialog.jsx';
 

@@ -16,7 +16,7 @@ import ThumbUpAltOutlinedIcon from '@mui/icons-material/ThumbUpAltOutlined';
 import ThumbDownAltOutlinedIcon from '@mui/icons-material/ThumbDownAltOutlined';
 import ContentCopyOutlinedIcon from '@mui/icons-material/ContentCopyOutlined';
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
-import useStore from '../../store/index.jsx'; // Import your Zustand store
+import useStore from '../../store/MainStore.jsx'; // Import your Zustand store
 
 /**
  * ChatMessage Component

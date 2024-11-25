@@ -2,7 +2,7 @@
 import React from 'react';
 import { Box, Button } from '@mui/material';
 import { Add as AddIcon } from '@mui/icons-material';
-import useStore from '../../store';
+import useStore from '../../store/MainStore.jsx';
 import { useTheme } from '@mui/material/styles';
 
 const NewChatButton = () => {

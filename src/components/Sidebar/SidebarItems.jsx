@@ -3,7 +3,7 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { Divider, Typography } from '@mui/material';
 import { Droppable, Draggable } from '@hello-pangea/dnd';
 import useDebounce from '../../hooks/useDebounce.jsx';
-import useStore from '../../store';
+import useStore from '../../store/MainStore.jsx';
 import SidebarItem from './SidebarItem.jsx';
 import SidebarSearch from './SidebarSearch.jsx';
 import RenameChatDialog from './RenameChatDialog.jsx';

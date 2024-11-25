@@ -10,7 +10,7 @@ import {
     Moon as MoonIcon,
 } from 'lucide-react';
 import { ThemeContext } from '../../context/ThemeContext.jsx';
-import useStore from '../../store';
+import useStore from '../../store/MainStore.jsx';
 import SidebarItems from './SidebarItems.jsx';
 
 const Sidebar = React.memo(() => {

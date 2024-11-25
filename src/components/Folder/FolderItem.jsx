@@ -19,7 +19,7 @@ import {
     Add as AddIcon,
 } from '@mui/icons-material';
 import { Droppable, Draggable } from '@hello-pangea/dnd';
-import useStore from '../../store/index.jsx';
+import useStore from '../../store/MainStore.jsx';
 import FolderList from './FolderList.jsx';
 import MoreOptionsMenu from './MoreOptionsMenu.jsx';
 import FolderChatItem from './FolderChatItem.jsx';

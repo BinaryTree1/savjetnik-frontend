@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Box, Typography, Divider } from '@mui/material';
 import ChatMessages from './ChatMessages.jsx';
 import ChatInput from './ChatInput.jsx';
-import useStore from '../../store/index.jsx';
+import useStore from '../../store/MainStore.jsx';
 
 /**
  * ChatWindow Component

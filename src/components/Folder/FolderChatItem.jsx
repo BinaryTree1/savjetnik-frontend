@@ -17,7 +17,7 @@ import {
 } from '@mui/icons-material';
 import PropTypes from 'prop-types';
 import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
-import useStore from '../../store/index.jsx';
+import useStore from '../../store/MainStore.jsx';
 /**
  * FolderChatItem Component
  *

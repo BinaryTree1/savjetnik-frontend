@@ -15,7 +15,7 @@ import {
     WbSunny as WbSunnyIcon,
     NightlightRound as NightlightRoundIcon,
 } from '@mui/icons-material';
-import useStore from './store';
+import useStore from './store/MainStore.jsx';
 import { ThemeContext } from './context/ThemeContext.jsx';
 import { DragDropContext } from '@hello-pangea/dnd';
 
