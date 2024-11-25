@@ -28,12 +28,12 @@ const Sidebar = React.memo(() => {
             sx={{
                 width: isSidebarOpen
                     ? {
-                        xs: '100%',
-                        sm: '100%',
-                        md: '30%',
-                        lg: '25%',
-                        xl: '25%',
-                    }
+                          xs: '100%',
+                          sm: '100%',
+                          md: '30%',
+                          lg: '25%',
+                          xl: '25%',
+                      }
                     : '0px', // Collapsed width
                 display: 'flex',
                 flexDirection: 'row',

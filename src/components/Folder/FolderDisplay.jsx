@@ -153,7 +153,10 @@ const FolderDisplay = () => {
                             InputProps={{
                                 disableUnderline: true,
                                 startAdornment: (
-                                    <InputAdornment position="start" sx={{ ml: 1 }}>
+                                    <InputAdornment
+                                        position="start"
+                                        sx={{ ml: 1 }}
+                                    >
                                         <SearchIcon
                                             sx={{ color: 'action.active' }}
                                         />

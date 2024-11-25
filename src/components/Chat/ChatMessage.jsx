@@ -163,7 +163,8 @@ const ChatMessage = ({ text, sender, index }) => {
                 pb={1}
                 gap={1}
                 sx={{
-                    bgcolor: sender === 'user' ? backgroundColor : 'transparent',
+                    bgcolor:
+                        sender === 'user' ? backgroundColor : 'transparent',
                 }}
             >
                 <Box
@@ -220,12 +221,20 @@ const ChatMessage = ({ text, sender, index }) => {
                     ) : (
                         <>
                             {/* Like Button */}
-                            <Tooltip title={reaction === 'like' ? 'Unlike' : 'Like'}>
+                            <Tooltip
+                                title={reaction === 'like' ? 'Unlike' : 'Like'}
+                            >
                                 <IconButton
-                                    aria-label={reaction === 'like' ? 'unlike' : 'like'}
+                                    aria-label={
+                                        reaction === 'like' ? 'unlike' : 'like'
+                                    }
                                     onClick={handleLike}
                                     size="small"
-                                    color={reaction === 'like' ? 'primary' : 'default'}
+                                    color={
+                                        reaction === 'like'
+                                            ? 'primary'
+                                            : 'default'
+                                    }
                                 >
                                     <ThumbUpAltOutlinedIcon fontSize="small" />
                                 </IconButton>
@@ -247,7 +256,11 @@ const ChatMessage = ({ text, sender, index }) => {
                                     }
                                     onClick={handleDislike}
                                     size="small"
-                                    color={reaction === 'dislike' ? 'error' : 'default'}
+                                    color={
+                                        reaction === 'dislike'
+                                            ? 'error'
+                                            : 'default'
+                                    }
                                 >
                                     <ThumbDownAltOutlinedIcon fontSize="small" />
                                 </IconButton>

@@ -16,7 +16,10 @@ export const createChatSlice = (set, get) => ({
 
     addChat: () => {
         const chats = get().chats;
-        const newChatId = chats.length > 0 ? Math.max(...chats.map((chat) => chat.id)) + 1 : 1;
+        const newChatId =
+            chats.length > 0
+                ? Math.max(...chats.map((chat) => chat.id)) + 1
+                : 1;
         const newChat = { id: newChatId, title: 'New Chat', messages: [] };
         set((state) => ({
             chats: [newChat, ...state.chats],
@@ -34,9 +37,13 @@ export const createChatSlice = (set, get) => ({
 
     deleteChat: (chatId) =>
         set((state) => {
-            const updatedChats = state.chats.filter((chat) => chat.id !== chatId);
+            const updatedChats = state.chats.filter(
+                (chat) => chat.id !== chatId
+            );
             const selectedChatId =
-                state.selectedChatId === chatId ? updatedChats[0]?.id || null : state.selectedChatId;
+                state.selectedChatId === chatId
+                    ? updatedChats[0]?.id || null
+                    : state.selectedChatId;
 
             // Remove chat from any folder it might be in
             const updatedFolders = state.folders.map((folder) => ({
@@ -60,7 +67,10 @@ export const createChatSlice = (set, get) => ({
             const updatedChats = state.chats.map((chat) => {
                 if (chat.id === selectedChatId) {
                     const isFirstMessage = chat.messages.length === 0;
-                    const updatedMessages = [...chat.messages, { text: messageText, sender: 'user' }];
+                    const updatedMessages = [
+                        ...chat.messages,
+                        { text: messageText, sender: 'user' },
+                    ];
                     const updatedTitle = isFirstMessage
                         ? messageText.split(' ').slice(0, 3).join(' ')
                         : chat.title;
@@ -80,7 +90,10 @@ export const createChatSlice = (set, get) => ({
             set((state) => {
                 const updatedChats = state.chats.map((chat) => {
                     if (chat.id === selectedChatId) {
-                        const updatedMessages = [...chat.messages, { text: 'This is a bot response.', sender: 'bot' }];
+                        const updatedMessages = [
+                            ...chat.messages,
+                            { text: 'This is a bot response.', sender: 'bot' },
+                        ];
                         return { ...chat, messages: updatedMessages };
                     }
                     return chat;
@@ -131,7 +144,9 @@ export const createChatSlice = (set, get) => ({
         set((state) => {
             const chats = state.chats;
             const folders = state.folders;
-            const folderedChatIds = folders.flatMap((folder) => folder.chatIds || []);
+            const folderedChatIds = folders.flatMap(
+                (folder) => folder.chatIds || []
+            );
             const unfolderedChats = chats
                 .map((chat) => chat.id)
                 .filter((id) => !folderedChatIds.includes(id));

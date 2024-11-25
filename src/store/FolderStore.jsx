@@ -33,7 +33,10 @@ export const createFolderSlice = (set) => ({
             folders.forEach((folder) => {
                 if (folder.parentId === parentId) {
                     descendantIds.push(folder.id);
-                    const childDescendants = getDescendantFolderIds(folders, folder.id);
+                    const childDescendants = getDescendantFolderIds(
+                        folders,
+                        folder.id
+                    );
                     descendantIds = descendantIds.concat(childDescendants);
                 }
             });
@@ -44,7 +47,10 @@ export const createFolderSlice = (set) => ({
             const foldersCopy = [...state.folders];
             const descendantIds = getDescendantFolderIds(foldersCopy, folderId);
             const updatedFolders = foldersCopy.map((folder) => {
-                if (folder.id === folderId || descendantIds.includes(folder.id)) {
+                if (
+                    folder.id === folderId ||
+                    descendantIds.includes(folder.id)
+                ) {
                     return { ...folder, isExpanded };
                 }
                 return folder;
