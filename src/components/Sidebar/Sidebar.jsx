@@ -9,7 +9,7 @@ import {
     ChevronLeft as ChevronLeftIcon,
     ChevronRight as ChevronRightIcon,
     Moon as MoonIcon,
-} from "lucide-react";
+} from 'lucide-react';
 import { ThemeContext } from '../../context/ThemeContext.jsx';
 import useStore from '../../store';
 import SidebarItems from './SidebarItems.jsx';
@@ -27,18 +27,22 @@ const Sidebar = React.memo(() => {
     return (
         <Box
             sx={{
-                width: isSidebarOpen ? {
-                    xs: '100%',
-                    sm: '100%',
-                    md: '30%',
-                    lg: '25%',
-                    xl: '25%',
-                } : '0px', // Collapsed width
+                width: isSidebarOpen
+                    ? {
+                          xs: '100%',
+                          sm: '100%',
+                          md: '30%',
+                          lg: '25%',
+                          xl: '25%',
+                      }
+                    : '0px', // Collapsed width
                 display: 'flex',
                 flexDirection: 'row',
                 borderRight: isSidebarOpen ? '1px solid' : 'none',
                 borderColor: 'divider',
-                backgroundColor: isSidebarOpen ? 'background.sidebar' : 'transparent',
+                backgroundColor: isSidebarOpen
+                    ? 'background.sidebar'
+                    : 'transparent',
                 height: '100vh',
                 overflow: 'hidden',
                 transition: 'width 0.3s ease',
@@ -58,7 +62,12 @@ const Sidebar = React.memo(() => {
                 }}
             >
                 {/* Toggle Button */}
-                <Tooltip title={isSidebarOpen ? "Collapse Sidebar" : "Expand Sidebar"} placement="right">
+                <Tooltip
+                    title={
+                        isSidebarOpen ? 'Collapse Sidebar' : 'Expand Sidebar'
+                    }
+                    placement="right"
+                >
                     <IconButton
                         onClick={toggleSidebar}
                         sx={{
@@ -66,15 +75,25 @@ const Sidebar = React.memo(() => {
                             height: '40px',
                             mb: 2,
                             '&:hover': {
-                                backgroundColor: isDarkMode ? '#374151' : '#F3F4F6',
+                                backgroundColor: isDarkMode
+                                    ? '#374151'
+                                    : '#F3F4F6',
                             },
                         }}
-                        aria-label={isSidebarOpen ? "Collapse Sidebar" : "Expand Sidebar"}
+                        aria-label={
+                            isSidebarOpen
+                                ? 'Collapse Sidebar'
+                                : 'Expand Sidebar'
+                        }
                     >
                         {isSidebarOpen ? (
-                            <ChevronLeftIcon sx={{ color: 'text.secondary', fontSize: 24 }} />
+                            <ChevronLeftIcon
+                                sx={{ color: 'text.secondary', fontSize: 24 }}
+                            />
                         ) : (
-                            <ChevronRightIcon sx={{ color: 'text.secondary', fontSize: 24 }} />
+                            <ChevronRightIcon
+                                sx={{ color: 'text.secondary', fontSize: 24 }}
+                            />
                         )}
                     </IconButton>
                 </Tooltip>
@@ -91,12 +110,16 @@ const Sidebar = React.memo(() => {
                                 height: '40px',
                                 mb: 1,
                                 '&:hover': {
-                                    backgroundColor: isDarkMode ? '#374151' : '#F3F4F6',
+                                    backgroundColor: isDarkMode
+                                        ? '#374151'
+                                        : '#F3F4F6',
                                 },
                             }}
                             aria-label="Chat View"
                         >
-                            <MessageIcon sx={{ color: 'text.secondary', fontSize: 24 }} />
+                            <MessageIcon
+                                sx={{ color: 'text.secondary', fontSize: 24 }}
+                            />
                         </IconButton>
                     </Tooltip>
                 )}
@@ -113,12 +136,16 @@ const Sidebar = React.memo(() => {
                                 height: '40px',
                                 mb: 1,
                                 '&:hover': {
-                                    backgroundColor: isDarkMode ? '#374151' : '#F3F4F6',
+                                    backgroundColor: isDarkMode
+                                        ? '#374151'
+                                        : '#F3F4F6',
                                 },
                             }}
                             aria-label="Saved Chats (Folder View)"
                         >
-                            <FolderIcon sx={{ color: 'text.secondary', fontSize: 24 }} />
+                            <FolderIcon
+                                sx={{ color: 'text.secondary', fontSize: 24 }}
+                            />
                         </IconButton>
                     </Tooltip>
                 )}
@@ -127,20 +154,34 @@ const Sidebar = React.memo(() => {
                 {isSidebarOpen && (
                     <Tooltip title="Toggle Dark Mode" placement="right">
                         <IconButton
-                            onClick={() => setThemeMode(isDarkMode ? 'light' : 'dark')}
+                            onClick={() =>
+                                setThemeMode(isDarkMode ? 'light' : 'dark')
+                            }
                             sx={{
                                 width: '40px',
                                 height: '40px',
                                 '&:hover': {
-                                    backgroundColor: isDarkMode ? '#374151' : '#F3F4F6',
+                                    backgroundColor: isDarkMode
+                                        ? '#374151'
+                                        : '#F3F4F6',
                                 },
                             }}
                             aria-label="Toggle dark mode"
                         >
                             {isDarkMode ? (
-                                <SunIcon sx={{ color: 'text.secondary', fontSize: 24 }} />
+                                <SunIcon
+                                    sx={{
+                                        color: 'text.secondary',
+                                        fontSize: 24,
+                                    }}
+                                />
                             ) : (
-                                <MoonIcon sx={{ color: 'text.secondary', fontSize: 24 }} />
+                                <MoonIcon
+                                    sx={{
+                                        color: 'text.secondary',
+                                        fontSize: 24,
+                                    }}
+                                />
                             )}
                         </IconButton>
                     </Tooltip>

@@ -141,9 +141,19 @@ const ChatMessage = ({ text, sender }) => {
                     </Tooltip>
 
                     {/* Dislike Button */}
-                    <Tooltip title={reaction === 'dislike' ? 'Remove Dislike' : 'Dislike'}>
+                    <Tooltip
+                        title={
+                            reaction === 'dislike'
+                                ? 'Remove Dislike'
+                                : 'Dislike'
+                        }
+                    >
                         <IconButton
-                            aria-label={reaction === 'dislike' ? 'remove dislike' : 'dislike'}
+                            aria-label={
+                                reaction === 'dislike'
+                                    ? 'remove dislike'
+                                    : 'dislike'
+                            }
                             onClick={handleDislike}
                             size="small"
                             color={reaction === 'dislike' ? 'error' : 'default'}
@@ -160,7 +170,10 @@ const ChatMessage = ({ text, sender }) => {
                             size="small"
                             color="inherit" // Follows theme colors
                         >
-                            <ContentCopyOutlinedIcon fontSize="small" color="action"/>
+                            <ContentCopyOutlinedIcon
+                                fontSize="small"
+                                color="action"
+                            />
                         </IconButton>
                     </Tooltip>
                 </Box>

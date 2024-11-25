@@ -39,12 +39,12 @@ const StyledTextField = styled(TextField)(({ theme }) => ({
  * @param {React.ReactNode} [props.startIcon] - Custom start adornment icon.
  */
 const SidebarSearch = ({
-                           searchQuery,
-                           onSearchChange,
-                           onClear,
-                           placeholder = 'Search chats',
-                           startIcon = <SearchIcon />,
-                       }) => {
+    searchQuery,
+    onSearchChange,
+    onClear,
+    placeholder = 'Search chats',
+    startIcon = <SearchIcon />,
+}) => {
     const theme = useTheme();
 
     /**
