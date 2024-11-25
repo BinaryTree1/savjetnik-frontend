@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Box } from '@mui/material';
+import { Box, Typography, Divider } from '@mui/material';
 import ChatMessages from './ChatMessages.jsx';
 import ChatInput from './ChatInput.jsx';
 import useStore from '../../store/index.jsx';
@@ -16,8 +16,9 @@ const ChatWindow = () => {
     const chats = useStore((state) => state.chats);
     const sendMessage = useStore((state) => state.sendMessage);
 
-    const messages =
-        chats.find((chat) => chat.id === selectedChatId)?.messages || [];
+    const selectedChat = chats.find((chat) => chat.id === selectedChatId);
+    const messages = selectedChat?.messages || [];
+    const chatName = selectedChat?.title || 'Chat';
 
     const handleSendMessage = () => {
         if (message.trim() !== '') {
@@ -33,8 +34,18 @@ const ChatWindow = () => {
             height="100vh"
             bgcolor="background.default"
         >
+            {/* Chat Name Header */}
+            <Box p={2}>
+                <Typography variant="h6" m={1}>
+                    {chatName}
+                </Typography>
+                <Divider />
+            </Box>
+
             {/* Messages Area */}
-            <ChatMessages messages={messages} />
+            <Box flexGrow={1} overflow="auto">
+                <ChatMessages messages={messages} />
+            </Box>
 
             {/* Input Area */}
             <Box

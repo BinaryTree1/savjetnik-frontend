@@ -260,6 +260,42 @@ const useStore = create((set, get) => ({
             return { folders };
         });
     },
+
+    editMessage: (index, newText) =>
+        set((state) => {
+            const selectedChatId = state.selectedChatId;
+            const updatedChats = state.chats.map((chat) => {
+                if (chat.id === selectedChatId) {
+                    const updatedMessages = [...chat.messages];
+                    updatedMessages[index] = {
+                        ...updatedMessages[index],
+                        text: newText,
+                    };
+                    return {
+                        ...chat,
+                        messages: updatedMessages,
+                    };
+                }
+                return chat;
+            });
+            return { chats: updatedChats };
+        }),
+
+    deleteMessagesAfter: (index) =>
+        set((state) => {
+            const selectedChatId = state.selectedChatId;
+            const updatedChats = state.chats.map((chat) => {
+                if (chat.id === selectedChatId) {
+                    const updatedMessages = chat.messages.slice(0, index);
+                    return {
+                        ...chat,
+                        messages: updatedMessages,
+                    };
+                }
+                return chat;
+            });
+            return { chats: updatedChats };
+        }),
 }));
 
 export default useStore;

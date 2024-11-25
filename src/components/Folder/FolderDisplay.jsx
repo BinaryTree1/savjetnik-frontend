@@ -5,9 +5,10 @@ import {
     IconButton,
     TextField,
     Tooltip,
-    Paper,
     Stack,
     InputAdornment,
+    Typography,
+    Divider,
 } from '@mui/material';
 import {
     CreateNewFolder as CreateNewFolderIcon,
@@ -17,6 +18,11 @@ import useStore from '../../store/index.jsx';
 import FolderList from './FolderList.jsx';
 import AddFolderDialog from './AddFolderDialog.jsx';
 
+/**
+ * FolderDisplay Component
+ *
+ * Displays a list of folders with search and add functionalities.
+ */
 const FolderDisplay = () => {
     // Zustand store actions and state
     const folders = useStore((state) => state.folders);
@@ -87,83 +93,110 @@ const FolderDisplay = () => {
     };
 
     return (
-        <Paper
-            elevation={0}
+        <Box
             sx={{
-                p: 3,
                 bgcolor: 'background.default',
-                width: {
-                    xs: '100%',
-                    sm: '90%',
-                    md: '80%',
-                    lg: '60%',
-                },
+                width: '100%',
+                display: 'flex',
+                flexDirection: 'column',
+                height: '100vh',
             }}
         >
-            <Stack spacing={3} sx={{ pt: 6 }}>
-                {/* Search and Add Root Folder */}
-                <Box
-                    display="flex"
-                    alignItems="center"
+            {/* Header Section */}
+
+            <Box p={2}>
+                <Typography variant="h6" m={1}>
+                    Folders
+                </Typography>
+                <Divider />
+            </Box>
+
+            {/* Main Content */}
+            <Box
+                sx={{
+                    flexGrow: 1,
+                    overflow: 'auto',
+                    display: 'flex',
+                    justifyContent: 'left',
+                    p: 3,
+                    pl: 5,
+                }}
+            >
+                <Stack
+                    spacing={3}
                     sx={{
-                        border: '1px solid',
-                        borderColor: 'divider',
-                        borderRadius: 1,
-                        overflow: 'hidden',
+                        width: {
+                            xs: '100%',
+                            sm: '90%',
+                            md: '80%',
+                            lg: '60%',
+                        },
                     }}
                 >
-                    {/* Search Input */}
-                    <TextField
-                        variant="standard"
-                        placeholder="Search folders"
-                        value={searchQuery}
-                        onChange={handleSearchChange}
-                        InputProps={{
-                            disableUnderline: true,
-                            startAdornment: (
-                                <InputAdornment position="start" sx={{ ml: 1 }}>
-                                    <SearchIcon
-                                        sx={{ color: 'action.active' }}
-                                    />
-                                </InputAdornment>
-                            ),
-                        }}
+                    {/* Search and Add Root Folder */}
+                    <Box
+                        display="flex"
+                        alignItems="center"
                         sx={{
-                            flexGrow: 1,
-                            '& .MuiInputBase-root': {
-                                pl: 0,
-                            },
-                            '& .MuiInputBase-input': {
-                                py: 1,
-                                px: 1,
-                            },
+                            border: '1px solid',
+                            borderColor: 'divider',
+                            borderRadius: 1,
+                            overflow: 'hidden',
                         }}
-                        aria-label="Search Folders"
-                    />
-
-                    {/* Add Root Folder Button */}
-                    <Tooltip title="Add Root Folder">
-                        <IconButton
-                            onClick={() => handleOpenAddDialog(null)}
-                            sx={{
-                                borderLeft: '1px solid',
-                                borderColor: 'divider',
-                                borderRadius: 0,
-                                px: 1,
+                    >
+                        {/* Search Input */}
+                        <TextField
+                            variant="standard"
+                            placeholder="Search folders"
+                            value={searchQuery}
+                            onChange={handleSearchChange}
+                            InputProps={{
+                                disableUnderline: true,
+                                startAdornment: (
+                                    <InputAdornment position="start" sx={{ ml: 1 }}>
+                                        <SearchIcon
+                                            sx={{ color: 'action.active' }}
+                                        />
+                                    </InputAdornment>
+                                ),
                             }}
-                            aria-label="Add root folder"
-                        >
-                            <CreateNewFolderIcon />
-                        </IconButton>
-                    </Tooltip>
-                </Box>
+                            sx={{
+                                flexGrow: 1,
+                                '& .MuiInputBase-root': {
+                                    pl: 0,
+                                },
+                                '& .MuiInputBase-input': {
+                                    py: 1,
+                                    px: 1,
+                                },
+                            }}
+                            aria-label="Search Folders"
+                        />
 
-                {/* Folder List */}
-                <FolderList
-                    filterFolders={filterFolders}
-                    onAddFolder={handleOpenAddDialog}
-                />
-            </Stack>
+                        {/* Add Root Folder Button */}
+                        <Tooltip title="Add Root Folder">
+                            <IconButton
+                                onClick={() => handleOpenAddDialog(null)}
+                                sx={{
+                                    borderLeft: '1px solid',
+                                    borderColor: 'divider',
+                                    borderRadius: 0,
+                                    px: 1,
+                                }}
+                                aria-label="Add root folder"
+                            >
+                                <CreateNewFolderIcon />
+                            </IconButton>
+                        </Tooltip>
+                    </Box>
+
+                    {/* Folder List */}
+                    <FolderList
+                        filterFolders={filterFolders}
+                        onAddFolder={handleOpenAddDialog}
+                    />
+                </Stack>
+            </Box>
 
             {/* Add Folder Dialog */}
             <AddFolderDialog
@@ -172,7 +205,7 @@ const FolderDisplay = () => {
                 onAdd={handleAddFolder}
                 parentId={selectedParentFolder}
             />
-        </Paper>
+        </Box>
     );
 };
 

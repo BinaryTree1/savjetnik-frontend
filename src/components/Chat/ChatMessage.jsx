@@ -1,6 +1,13 @@
 // src/components/Chat/ChatMessage.jsx
 import React, { useState } from 'react';
-import { Box, IconButton, Tooltip, Snackbar } from '@mui/material';
+import {
+    Box,
+    IconButton,
+    Tooltip,
+    Snackbar,
+    TextField,
+    Button,
+} from '@mui/material';
 import PropTypes from 'prop-types';
 import { useTheme } from '@mui/material/styles';
 import ChatAvatar from './ChatAvatar.jsx';
@@ -8,18 +15,23 @@ import ChatText from './ChatText.jsx';
 import ThumbUpAltOutlinedIcon from '@mui/icons-material/ThumbUpAltOutlined';
 import ThumbDownAltOutlinedIcon from '@mui/icons-material/ThumbDownAltOutlined';
 import ContentCopyOutlinedIcon from '@mui/icons-material/ContentCopyOutlined';
+import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
+import useStore from '../../store/index.jsx'; // Import your Zustand store
 
 /**
  * ChatMessage Component
  *
- * Renders a chat message with avatar, text, and action buttons for bot messages.
+ * Renders a chat message with avatar, text, and action buttons.
  *
  * @param {Object} props - Component props.
  * @param {string} props.text - The message text.
  * @param {string} props.sender - The sender type ('user' or 'bot').
+ * @param {number} props.index - The index of the message in the messages array.
  */
-const ChatMessage = ({ text, sender }) => {
+const ChatMessage = ({ text, sender, index }) => {
     const theme = useTheme();
+    const editMessage = useStore((state) => state.editMessage);
+    const deleteMessagesAfter = useStore((state) => state.deleteMessagesAfter);
 
     const backgroundColor =
         sender === 'user'
@@ -33,6 +45,10 @@ const ChatMessage = ({ text, sender }) => {
 
     // State to track if the user liked or disliked the message
     const [reaction, setReaction] = useState(null); // 'like' | 'dislike' | null
+
+    // State for editing
+    const [isEditing, setIsEditing] = useState(false);
+    const [editedText, setEditedText] = useState(text);
 
     // Handlers for like and dislike actions
     const handleLike = () => {
@@ -71,6 +87,27 @@ const ChatMessage = ({ text, sender }) => {
         setOpenSnackbar(false);
     };
 
+    // Handler for editing
+    const handleEdit = () => {
+        setIsEditing(true);
+    };
+
+    const handleSaveEdit = () => {
+        if (editedText.trim() === '') {
+            alert('Message cannot be empty.');
+            return;
+        }
+        editMessage(index, editedText);
+        // Delete messages after the edited message
+        deleteMessagesAfter(index + 1);
+        setIsEditing(false);
+    };
+
+    const handleCancelEdit = () => {
+        setEditedText(text);
+        setIsEditing(false);
+    };
+
     return (
         <Box width="100%">
             {/* Message Bubble */}
@@ -78,6 +115,7 @@ const ChatMessage = ({ text, sender }) => {
                 display="flex"
                 alignItems="flex-start"
                 p={2}
+                pb={1}
                 sx={{
                     bgcolor: backgroundColor,
                 }}
@@ -88,7 +126,6 @@ const ChatMessage = ({ text, sender }) => {
                         alignItems="flex-start"
                         flexDirection="row"
                         gap={2}
-                        p={1}
                         sx={{
                             width: {
                                 xs: '100%',
@@ -103,20 +140,36 @@ const ChatMessage = ({ text, sender }) => {
                         <ChatAvatar sender={sender} />
 
                         {/* Text Content */}
-                        <ChatText sender={sender} text={text} />
+                        {isEditing ? (
+                            <TextField
+                                fullWidth
+                                multiline
+                                value={editedText}
+                                onChange={(e) => setEditedText(e.target.value)}
+                            />
+                        ) : (
+                            <ChatText sender={sender} text={text} />
+                        )}
                     </Box>
                 </Box>
             </Box>
 
-            {/* Action Buttons for Bot Messages */}
-            {sender === 'bot' && (
+            {/* Action Buttons */}
+            <Box
+                display="flex"
+                justifyContent="center"
+                alignItems="center"
+                p={0}
+                pb={1}
+                gap={1}
+                sx={{
+                    bgcolor: sender === 'user' ? backgroundColor : 'transparent',
+                }}
+            >
                 <Box
                     display="flex"
-                    justifyContent="flex-end"
                     alignItems="center"
-                    px={2}
-                    pb={2}
-                    gap={1}
+                    justifyContent="flex-end"
                     sx={{
                         width: {
                             xs: '100%',
@@ -125,59 +178,99 @@ const ChatMessage = ({ text, sender }) => {
                             lg: '80%',
                             xl: '70%',
                         },
-                        margin: '0 auto', // Center the action buttons row
                     }}
+                    gap={1}
                 >
-                    {/* Like Button */}
-                    <Tooltip title={reaction === 'like' ? 'Unlike' : 'Like'}>
-                        <IconButton
-                            aria-label={reaction === 'like' ? 'unlike' : 'like'}
-                            onClick={handleLike}
-                            size="small"
-                            color={reaction === 'like' ? 'primary' : 'default'}
-                        >
-                            <ThumbUpAltOutlinedIcon fontSize="small" />
-                        </IconButton>
-                    </Tooltip>
+                    {sender === 'user' ? (
+                        <>
+                            {/* Edit Button */}
+                            {!isEditing && (
+                                <Tooltip title="Edit Message">
+                                    <IconButton
+                                        aria-label="edit"
+                                        onClick={handleEdit}
+                                        size="small"
+                                    >
+                                        <EditOutlinedIcon fontSize="small" />
+                                    </IconButton>
+                                </Tooltip>
+                            )}
 
-                    {/* Dislike Button */}
-                    <Tooltip
-                        title={
-                            reaction === 'dislike'
-                                ? 'Remove Dislike'
-                                : 'Dislike'
-                        }
-                    >
-                        <IconButton
-                            aria-label={
-                                reaction === 'dislike'
-                                    ? 'remove dislike'
-                                    : 'dislike'
-                            }
-                            onClick={handleDislike}
-                            size="small"
-                            color={reaction === 'dislike' ? 'error' : 'default'}
-                        >
-                            <ThumbDownAltOutlinedIcon fontSize="small" />
-                        </IconButton>
-                    </Tooltip>
+                            {/* Save and Cancel Buttons for Editing */}
+                            {isEditing && (
+                                <>
+                                    <Button
+                                        variant="contained"
+                                        color="primary"
+                                        size="small"
+                                        onClick={handleSaveEdit}
+                                    >
+                                        Save
+                                    </Button>
+                                    <Button
+                                        variant="text"
+                                        size="small"
+                                        onClick={handleCancelEdit}
+                                    >
+                                        Cancel
+                                    </Button>
+                                </>
+                            )}
+                        </>
+                    ) : (
+                        <>
+                            {/* Like Button */}
+                            <Tooltip title={reaction === 'like' ? 'Unlike' : 'Like'}>
+                                <IconButton
+                                    aria-label={reaction === 'like' ? 'unlike' : 'like'}
+                                    onClick={handleLike}
+                                    size="small"
+                                    color={reaction === 'like' ? 'primary' : 'default'}
+                                >
+                                    <ThumbUpAltOutlinedIcon fontSize="small" />
+                                </IconButton>
+                            </Tooltip>
 
-                    {/* Copy Button */}
-                    <Tooltip title="Copy Message">
-                        <IconButton
-                            aria-label="copy"
-                            onClick={handleCopy}
-                            size="small"
-                            color="inherit" // Follows theme colors
-                        >
-                            <ContentCopyOutlinedIcon
-                                fontSize="small"
-                                color="action"
-                            />
-                        </IconButton>
-                    </Tooltip>
+                            {/* Dislike Button */}
+                            <Tooltip
+                                title={
+                                    reaction === 'dislike'
+                                        ? 'Remove Dislike'
+                                        : 'Dislike'
+                                }
+                            >
+                                <IconButton
+                                    aria-label={
+                                        reaction === 'dislike'
+                                            ? 'remove dislike'
+                                            : 'dislike'
+                                    }
+                                    onClick={handleDislike}
+                                    size="small"
+                                    color={reaction === 'dislike' ? 'error' : 'default'}
+                                >
+                                    <ThumbDownAltOutlinedIcon fontSize="small" />
+                                </IconButton>
+                            </Tooltip>
+
+                            {/* Copy Button */}
+                            <Tooltip title="Copy Message">
+                                <IconButton
+                                    aria-label="copy"
+                                    onClick={handleCopy}
+                                    size="small"
+                                    color="inherit"
+                                >
+                                    <ContentCopyOutlinedIcon
+                                        fontSize="small"
+                                        color="action"
+                                    />
+                                </IconButton>
+                            </Tooltip>
+                        </>
+                    )}
                 </Box>
-            )}
+            </Box>
 
             {/* Snackbar for Copy Action */}
             <Snackbar
@@ -194,6 +287,7 @@ const ChatMessage = ({ text, sender }) => {
 ChatMessage.propTypes = {
     text: PropTypes.string.isRequired,
     sender: PropTypes.oneOf(['user', 'bot']).isRequired,
+    index: PropTypes.number.isRequired,
 };
 
 export default React.memo(ChatMessage);

@@ -32,7 +32,12 @@ const ChatMessages = ({ messages }) => {
     return (
         <Box flexGrow={1} overflow="auto">
             {messages.map((msg, index) => (
-                <ChatMessage key={index} text={msg.text} sender={msg.sender} />
+                <ChatMessage
+                    key={index}
+                    text={msg.text}
+                    sender={msg.sender}
+                    index={index}
+                />
             ))}
             <div ref={messagesEndRef} />
         </Box>
